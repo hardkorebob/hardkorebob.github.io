@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer $made by hardkorebob</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #222;
+            color: #FFF;
+        }
+
+        .timer {
+            font-size: 24px;
+        }
+
+        #progress {
+            width: 100%;
+            height: 250px;
+            background-color: #ccc;
+            margin: 10px;
+        }
+
+        #progress2 {
+            width: 100%;
+            height: 250px;
+            background-color: #ccc;
+        }
+
+        #bar {
+            height: 100%;
+            width: 0;
+            background-color: #4caf50;
+        }
+
+        #bar2 {
+            height: 100%;
+            width: 0;
+            background-color: #af504c;
+        }
+
+        a:link {
+            color: #0095ff;
+        }
+
+        .button {
+            background-color: #0095ff;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            box-shadow: rgba(255, 255, 255, .4) 0 1px 0 0 inset;
+            box-sizing: border-box;
+            color: #fff;
+            cursor: pointer;
+            font-family: -apple-system, system-ui, "Segoe UI", "Liberation Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.15385;
+            outline: none;
+            padding: 8px .8em;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            white-space: nowrap;
+            margin: 6px 0;
+        }
+
+        .button:active {
+            background-color: #0064bd;
+            box-shadow: none;
+        }
+
+        .numberCircle {
+            padding: 4px .4em;
+            border-radius: 3px;
+            font-weight: 600;
+            line-height: 1.15385;
+            font-size: 18px;
+            color: #fff;
+            text-align: center;
+        }
+
+        #counter h1,
+        #counter div,
+        #counter button {
+            display: inline-block;
+            margin: 4px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <p><strong>Pomodoro Timer</strong></p>
+    <div id="counter">
+        <div class="numberCircle" id="workCount" style="background:#4caf50;">0</div>
+        <h1>Work</h1>
+        <div class="timer" id="timer">20:00</div>
+    </div>
+    <button class="button" role="button" onclick="startTimer()">Start</button>
+    <button class="button" role="button" onclick="resetTimer()">Reset</button>
+    <div id="progress">
+        <div id="bar"></div>
+    </div>
+
+    <div id="counter">
+        <div class="numberCircle" id="breakCount" style="background:#af504c;">0</div>
+        <h1>Break</h1>
+        <div class="timer" id="timer2">5:00</div>
+    </div>
+    <button class="button" role="button" onclick="startTimer2()">Start</button>
+    <button class="button" role="button" onclick="resetTimer2()">Reset</button>
+    <div id="progress">
+        <div id="bar2"></div>
+    </div>
+    <p>$ made by <a href="https://www.instagram.com/hardkorebob">hardkorebob</a></p>
+    
+    <script>
+        let workTime = 20 * 60; // 20 minutes in seconds
+        let dabreakTime = 5 * 60;
+        let breakTime = 5 * 60; // 5 minutes in seconds
+        let timerInterval;
+        let timerInterval2;
+        let workButtonClickCount = 0;
+        let breakButtonClickCount = 0;
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            const timerElement = document.getElementById('timer');
+            const counterElement = document.getElementById('workCount');
+            const progressBar = document.getElementById('bar');
+            let totalTime = workTime;
+            timerElement.innerText = formatTime(totalTime);
+            progressBar.style.width = '0%';
+
+            timerInterval = setInterval(() => {
+                if (totalTime <= 0) {
+                    clearInterval(timerInterval);
+                    if (totalTime === 0) {
+                        beep();
+                        workButtonClickCount++;
+                        counterElement.innerText = workButtonClickCount;
+                        if (workTime === totalTime) {
+                            totalTime = breakTime;
+                            timerElement.innerText = 'Break Time';
+                        } else {
+                            totalTime = workTime;
+                            timerElement.innerText = 'Work Time';
+                        }
+                        progressBar.style.width = '0%';
+                    }
+                } else {
+                    totalTime--;
+                    timerElement.innerText = formatTime(totalTime);
+                    progressBar.style.width = ((workTime - totalTime) / workTime) * 100 + '%';
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            const timerElement = document.getElementById('timer');
+            const progressBar = document.getElementById('bar');
+            timerElement.innerText = '0:00';
+            progressBar.style.width = '0%';
+        }
+
+        function startTimer2() {
+            clearInterval(timerInterval2);
+            const timerElement2 = document.getElementById('timer2');
+            const counterElement = document.getElementById('breakCount');
+            const progressBar2 = document.getElementById('bar2');
+            let totalTime = dabreakTime;
+            timerElement2.innerText = formatTime(totalTime);
+            progressBar2.style.width = '0%';
+
+            timerInterval2 = setInterval(() => {
+                if (totalTime <= 0) {
+                    clearInterval(timerInterval2);
+                    if (totalTime === 0) {
+                        beep();
+                        breakButtonClickCount++;
+                        counterElement.innerText = breakButtonClickCount;
+                        if (dabreakTime === totalTime) {
+                            totalTime = breakTime;
+                            timerElement2.innerText = 'Break Time';
+                        } else {
+                            totalTime = dabreakTime;
+                            timerElement2.innerText = 'Work Time';
+                        }
+                        progressBar2.style.width = '0%';
+                    }
+                } else {
+                    totalTime--;
+                    timerElement2.innerText = formatTime(totalTime);
+                    progressBar2.style.width = ((dabreakTime - totalTime) / dabreakTime) * 100 + '%';
+                }
+            }, 1000);
+        }
+
+        function resetTimer2() {
+            clearInterval(timerInterval2);
+            const timerElement2 = document.getElementById('timer2');
+            const progressBar2 = document.getElementById('bar2');
+            timerElement2.innerText = '0:00';
+            progressBar2.style.width = '0%';
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        }
+
+        function beep() {
+        var snd = new Audio("data:audio/wav;base64,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qJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=");  
+        snd.play();
+  }
+    </script>
+</body>
+</html>
