@@ -1,3 +1,37 @@
+<!--#$ made by hardkorebob
+#!/bin/sh
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 <url_list_file>"
+  exit 1
+fi
+url_list_file="$1"
+if [ ! -f "$url_list_file" ]; then
+  echo "Error: Input file '$url_list_file' does not exist."
+  exit 1
+fi
+
+download_dir="downloaded_webfiles"
+mkdir -p "$download_dir"
+
+while read -r url; do
+	wget -P $download_dir --level=1 --limit-rate=2000K --page-requisites --user-agent=Mozilla --no-parent --adjust-extension --no-clobber -e robots=off "$url"
+done < "$url_list_file" 
+
+cat `find "$download_dir" -name "index.html"` | grep rap > file0
+cat `find "$download_dir" -name "*.html" | grep /[[:digit:]].html | sort -n | tr '\n' ' '`  > file1
+cat `find "$download_dir" -name "*.html" | grep /[[:digit:]][[:digit:]].html | sort -n | tr '\n' ' '`  > file2
+cat file0 file1 file2 | grep "read-more" | grep -o 'href="[^"]*' | sed 's/href="//g' > links
+
+while read -r url; do
+wget -P $download_dir --level=1 --limit-rate=2000K --page-requisites --user-agent=Mozilla --no-parent --adjust-extension --no-clobber -e robots=off "$url"
+done < links 
+
+cat `sed 's|https://bustednewspaper.com/virginia/|downloaded_webfiles/bustednewspaper.com/virginia/|; s/$/index.html/g' links | tr '\n' ' '` | grep -o 'src="[^"]*' | grep jpg | sed 's/src/<img src/g; s/jpg/jpg">/g' > imgs 
+cat file0 file1 file2 | grep "Read More" > l
+paste -d '\t' l imgs > out
+cat head out > busted.html
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
