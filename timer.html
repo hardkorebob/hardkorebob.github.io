@@ -150,13 +150,7 @@
                         beep();
                         workButtonClickCount++;
                         counterElement.innerText = workButtonClickCount;
-                        if (workTime === totalTime) {
-                            totalTime = breakTime;
-                            timerElement.innerText = 'Break Time';
-                        } else {
-                            totalTime = workTime;
-                            timerElement.innerText = 'Work Time';
-                        }
+                        timerElement.innerText = 'Break Time';
                         progressBar.style.width = '0%';
                     }
                 } else {
