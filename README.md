@@ -9,3 +9,5 @@ CAN&DO NOT USE WITHOUT PERMISSION
 PRIVATE USE ONLY 
 USD$1 Trillion in FINE VIOLATION TO YOU CORPS
 Complete, correct and true soul in a human machine in the age of Kali. #uskcon
+
+https://special.fish/hardkorebob
