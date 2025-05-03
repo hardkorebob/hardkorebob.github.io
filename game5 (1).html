@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boundary Game</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --primary-text: #FFFFFF;
+            --secondary-text: #B0B0B0;
+            --yes-color: #4CAF50;
+            --no-color: #F44336;
+            --reset-color: #1E1E1E;
+            --entropy-color: #FF6D00;
+            --wisdom-color: #00BFA5;
+            --passivity-color: #607D8B;
+            --risk-color: #FF80AB;
+            --resilience-color: #4CAF50;
+
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: var(--bg-color);
+            color: var(--primary-text);
+        }
+
+        .game-container {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 95%;
+            margin: 1rem;
+        }
+
+        .total-timer {
+            font-size: 1.1rem;
+            color: var(--secondary-text);
+            margin: 0.5rem 0;
+            text-align: center;
+        }
+
+        .timer-circle {
+            width: 60px;
+            height: 60px;
+            margin: 1rem auto;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .progress-circle {
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .decision-emoji {
+            font-size: 3.5rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.1));
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        button {
+            padding: 1rem 1.8rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            min-width: 100px;
+            font-weight: 500;
+        }
+
+        button:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .yes-btn {
+            background: var(--yes-color);
+            color: white;
+        }
+
+        .no-btn {
+            background: var(--no-color);
+            color: white;
+        }
+
+        .reset-btn {
+            background: var(--reset-color);
+            color: white;
+            font-size: 2rem;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.6rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-circle {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .stat-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.3rem;
+            text-align: center;
+            color: var(--secondary-text);
+        }
+
+        #entropyProgress { stroke: var(--entropy-color); }
+        #riskProgress { stroke: var(--risk-color); }
+        #wisdomProgress { stroke: var(--wisdom-color); }
+        #passivityProgress { stroke: var(--passivity-color); }
+        #choiceProgress { stroke: var(--yes-color); }
+        
+        .stat-circle circle:first-child {
+            stroke: rgba(255,255,255,0.1);
+        }
+
+        .game-over {
+            color: var(--no-color);
+            font-weight: bold;
+            margin: 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        .passivity-alert {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(244,67,54,0.9);
+            color: black;
+            padding: 1rem;
+            border-radius: 8px;
+            animation: blink 0.5s 1;
+            display: none;
+            font-size: 2rem;
+
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        @media (max-width: 380px) {
+            .game-container {
+                padding: 1rem;
+            }
+            
+            .decision-emoji {
+                font-size: 3rem;
+            }
+            
+            button {
+                padding: 0.8rem 1.2rem;
+                min-width: 80px;
+                font-size: 1rem;
+            }
+            
+            .stat-circle {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-over" id="gameOver"></div>
+        <div class="total-timer" id="totalTimer">00:00</div>
+
+        <div class="passivity-alert" id="passivityAlert">🐀</div>
+
+        <div class="stats">
+            <!-- Entropy -->
+            <div class="stat-circle">
+                <svg width="70" height="70">
+                    <circle class="progress-circle" cx="35" cy="35" r="32" stroke="#333"></circle>
+                    <circle class="progress-circle" id="entropyProgress" cx="35" cy="35" r="32"></circle>
+                </svg>
+                <div class="stat-label">
+                    <div>🔥</div>
+
+                </div>
+                    <div id="entropyPercent">30</div>
+            </div>
+
+            <div class="stat-circle">
+                <svg width="70" height="70">
+                    <circle class="progress-circle" cx="35" cy="35" r="32" stroke="#c8e6c9"></circle>
+                    <circle class="progress-circle" id="choiceProgress" cx="35" cy="35" r="32"></circle>
+                </svg>
+                <div class="stat-label">
+                    <div>✅ ❌</div>
+
+                </div>
+                    <div id="choiceRatio">0:0</div>
+            </div>
+            
+            <!-- Risk (Bunny) -->
+            <div class="stat-circle">
+                <svg width="70" height="70">
+                    <circle class="progress-circle" cx="35" cy="35" r="32" stroke="#333"></circle>
+                    <circle class="progress-circle" id="riskProgress" cx="35" cy="35" r="32"></circle>
+                </svg>
+                <div class="stat-label">
+                    <div>🐇</div>
+
+                </div>
+                    <div id="riskCount">0</div>
+            </div>
+
+            <!-- Wisdom (Turtle) -->
+            <div class="stat-circle">
+                <svg width="70" height="70">
+                    <circle class="progress-circle" cx="35" cy="35" r="32" stroke="#333"></circle>
+                    <circle class="progress-circle" id="wisdomProgress" cx="35" cy="35" r="32"></circle>
+                </svg>
+                <div class="stat-label">
+                    <div>🐢</div>
+
+                </div>
+                    <div id="wisdomPercent">0</div>
+            </div>
+
+            <!-- Passivity (Rat) -->
+            <div class="stat-circle">
+                <svg width="70" height="70">
+                    <circle class="progress-circle" cx="35" cy="35" r="32" stroke="#333"></circle>
+                    <circle class="progress-circle" id="passivityProgress" cx="35" cy="35" r="32"></circle>
+                </svg>
+                <div class="stat-label">
+                    <div>🐀</div>
+
+                </div>
+                    <div id="passivityPercent">0</div>
+            </div>
+        </div>
+
+        <div class="decision-emoji" id="decisionEmoji">🔄</div>
+        
+        <div class="buttons">
+            <button class="yes-btn" onclick="processChoice(true)"> Y </button>
+            <button class="no-btn" onclick="processChoice(false)"> N 		</button>
+        </div>
+
+        <div class="timer-circle">
+            <svg width="60" height="60">
+                <circle class="progress-circle" cx="30" cy="30" r="24" stroke="#333"></circle>
+                <circle class="progress-circle" id="timerProgress" cx="30" cy="30" r="24"></circle>
+            </svg>
+        </div>
+
+        <button class="reset-btn" onclick="resetGame()">🔄</button>
+    </div>
+
+    <script>
+        let entropy = 30;
+        const maxEntropy = 100;
+        let currentDecision = null;
+        let progressInterval = null;
+        let yesCount = 0;
+        let noCount = 0;
+        let wiseChoices = 0;
+        let totalChoices = 0;
+        let passiveChoices = 0;
+        let riskChoices = 0;
+        let startTime;
+        let totalTimeInterval;
+        const CIRCUMFERENCE = 2 * Math.PI * 32;
+        const emojiMap = {
+            'Constructive': ['🤝', '👑'],
+            'Destructive': ['🎭', '💀']
+        };
+
+        function adjustRisk(change) {
+            riskChoices += change;
+            const riskProgress = document.getElementById('riskProgress');
+            const rootStyles = getComputedStyle(document.documentElement);
+            riskProgress.style.stroke = riskChoices >= 0 
+            ? rootStyles.getPropertyValue('--risk-color').trim()
+            : rootStyles.getPropertyValue('--resilience-color').trim();
+}
+
+        function updateProgress(elementId, percentage) {
+            const progress = Math.min(Math.abs(percentage), 1) * CIRCUMFERENCE;
+            const remaining = CIRCUMFERENCE - progress;
+            document.getElementById(elementId).style.strokeDasharray = `${progress} ${remaining}`;
+        }
+
+        function calculateWisdom() {
+            return totalChoices > 0 ? Math.round((wiseChoices / totalChoices) * 100) : 0;
+        }
+
+        function calculatePassivity() {
+            const total = yesCount + noCount + passiveChoices;
+            return total > 0 ? Math.round((passiveChoices / total) * 100) : 0;
+        }
+
+        function updateProgressCircles() {
+            const totalChoicesDisplay = yesCount + noCount;
+            const choicePercentage = totalChoicesDisplay > 0 ? yesCount / totalChoicesDisplay : 0;
+            
+            updateProgress('choiceProgress', choicePercentage);
+            updateProgress('entropyProgress', entropy / maxEntropy);
+            updateProgress('wisdomProgress', calculateWisdom() / 100);
+            updateProgress('passivityProgress', calculatePassivity() / 100);
+            updateProgress('riskProgress', Math.abs(riskChoices) / 100);
+        }
+
+        function showPassivityAlert() {
+            const alert = document.getElementById('passivityAlert');
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 1000);
+            adjustRisk(1);
+            totalChoices++;
+            wiseChoices = Math.max(0, wiseChoices - 1);
+        }
+
+        function startNewRound() {
+            if(entropy >= maxEntropy) return;
+            
+            clearInterval(progressInterval);
+            const decisionType = Math.random() < 0.5 ? 'Constructive' : 'Destructive';
+            currentDecision = emojiMap[decisionType][Math.floor(Math.random() * 2)];
+            document.getElementById('decisionEmoji').textContent = currentDecision;
+
+            const timerProgress = document.getElementById('timerProgress');
+            timerProgress.style.stroke = '#4CAF50';
+            timerProgress.style.strokeDasharray = `${CIRCUMFERENCE} ${CIRCUMFERENCE}`;
+            
+            let timeLeft = 1;
+            updateProgress('timerProgress', 0);
+            
+            progressInterval = setInterval(() => {
+                timeLeft -= 0.01;
+                const timerColor = timeLeft > 0.66 ? '#4CAF50' :
+                                   timeLeft > 0.33 ? '#FFC107' : '#F44336';
+                timerProgress.style.stroke = timerColor;
+                updateProgress('timerProgress', 1 - timeLeft);
+                
+                if(timeLeft <= 0) {
+                    clearInterval(progressInterval);
+                    passiveChoices++;
+                    entropy = Math.min(entropy + 10, maxEntropy);
+                    showPassivityAlert();
+                    updateDisplay();
+                    if(entropy < maxEntropy) setTimeout(startNewRound, 1500);
+                }
+            }, 30);
+        }
+
+        function processChoice(choice) {
+            if(entropy >= maxEntropy) return;
+            
+            clearInterval(progressInterval);
+            choice ? yesCount++ : noCount++;
+            totalChoices++;
+
+            // Risk adjustments
+            switch(currentDecision) {
+                case '🎭':
+                    adjustRisk(choice ? 2 : -2);
+                    break;
+                case '👑':
+                    adjustRisk(choice ? 1 : -1);
+                    break;
+                case '💀':
+                    adjustRisk(choice ? 3 : -3);
+                    break;
+                case '🤝':
+                    if(!choice) adjustRisk(3);
+                    break;
+            }
+
+            // Wisdom tracking
+            if(currentDecision === '🤝' || currentDecision === '👑') {
+                if(choice) wiseChoices++;
+            } else {
+                if(!choice) wiseChoices++;
+            }
+
+            // Entropy calculations
+            if(currentDecision === '🤝' || currentDecision === '👑') {
+                entropy = choice ? Math.max(0, entropy - 5) : Math.min(entropy + 5, maxEntropy);
+            } else {
+                if(currentDecision === '💀' && choice) {
+                    entropy = Math.min(entropy + 15, maxEntropy);
+                } else {
+                    entropy = choice ? Math.min(entropy + 10, maxEntropy) : Math.max(0, entropy - 5);
+                }
+            }
+
+            updateDisplay();
+            if(entropy < maxEntropy) setTimeout(startNewRound, 1500);
+        }
+
+        function updateDisplay() {
+            updateProgressCircles();
+            document.getElementById('entropyPercent').textContent = `${entropy}%`;
+            document.getElementById('choiceRatio').textContent = `${yesCount}:${noCount} ${totalChoices}`;
+            document.getElementById('wisdomPercent').textContent = `${calculateWisdom()}%`;
+            document.getElementById('passivityPercent').textContent = `${calculatePassivity()}%`;
+            document.getElementById('riskCount').textContent = `${riskChoices}`;
+            
+            if(entropy >= maxEntropy) {
+                document.getElementById('gameOver').textContent = "💥 System Collapsed!";
+                document.getElementById('decisionEmoji').textContent = "💀";
+            }
+        }
+function updateTotalTimer() {
+    if (entropy >= maxEntropy) {
+        clearInterval(totalTimeInterval);
+        return;
+    }
+    const currentTime = Date.now();
+    const elapsed = currentTime - startTime;
+    const minutes = Math.floor(elapsed / 60000);
+    const seconds = Math.floor((elapsed % 60000) / 1000);
+    const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    document.getElementById('totalTimer').textContent = formatted;
+}
+
+function resetGame() {
+    entropy = 30;
+    yesCount = 0;
+    noCount = 0;
+    wiseChoices = 0;
+    totalChoices = 0;
+    passiveChoices = 0;
+    riskChoices = 0;
+    clearInterval(progressInterval);
+    document.getElementById('gameOver').textContent = "";
+    
+    // Timer reset
+    if (totalTimeInterval) clearInterval(totalTimeInterval);
+    document.getElementById('totalTimer').textContent = "00:00";
+    startTime = Date.now();
+    totalTimeInterval = setInterval(updateTotalTimer, 1000);
+    startNewRound();
+    updateDisplay();
+
+}
+        // Initialize
+        document.querySelectorAll('.progress-circle').forEach(circle => {
+            circle.style.strokeDasharray = `${CIRCUMFERENCE} ${CIRCUMFERENCE}`;
+        });
+        resetGame();
+    </script>
+</body>
+</html>
