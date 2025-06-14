@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EST Hex Progress Clock</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #00ff88;
+            padding: 20px;
+        }
+
+        .clock-container {
+            background: radial-gradient(circle, #2a2a3e, #1a1a2e);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 0 50px rgba(0, 255, 136, 0.3),
+                inset 0 0 50px rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff00ff;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .time-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .current-time {
+            font-size: 48px;
+            font-weight: bold;
+            color: #eca;
+            text-shadow: 0 0 20px #ff6b35;
+            margin-bottom: 10px;
+        }
+
+        .current-hex {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffff00;
+            text-shadow: 0 0 15px #ffff00;
+            margin-bottom: 5px;
+        }
+
+        .cycle-info {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+        .progress-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .hour-title {
+            color: #ff6b35;
+            text-shadow: 0 0 10px #ff6b35;
+        }
+
+        .hex-title {
+            color: #00ff88;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            border: 2px solid;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .hour-bar {
+            border-color: #ff6b35;
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .hex-bar {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+        .hex-bar2 {
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 13px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hour-fill {
+            background: linear-gradient(90deg, #ff4500, #ff6b35, #ff8c42);
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.6);
+        }
+
+        .hex-fill {
+            background: linear-gradient(90deg, #00cc66, #00ff88, #33ffaa);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+        }
+
+        .hex-fill2 {
+            background: linear-gradient(90deg, #ffe300, #ffd700, #ffd777);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50px;
+            width: 50px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -50px; }
+            100% { left: 100%; }
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-top: 5px;
+            opacity: 0.6;
+        }
+
+        .hex-segments {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .hex-segment {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .hex-segment.active {
+            background: linear-gradient(135deg, #00ff88, #33ffaa);
+            color: #0f0f23;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+            transform: scale(1.1);
+        }
+
+        .hex-segment.passed {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="time-display">
+            <div class="current-time" id="currentTime">12:</div>
+        <!--<div class="current-hex" id="currentHex">0</div>-->
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-bar hour-bar">
+                <div class="progress-fill hour-fill" id="hourProgress"></div>
+            </div>
+
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-bar hex-bar">
+                <div class="progress-fill hex-fill" id="hexProgress"></div>
+            </div>
+
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-bar hex-bar2">
+                <div class="progress-fill hex-fill2" id="segmentProgress"></div>
+            </div>
+            <div class="progress-labels">
+                <span>0:00</span>
+                <span>0:56</span>
+                <span>1:52</span>
+                <span>2:48</span>
+                <span>3:45</span>
+            </div>
+        </div>
+
+        <div class="hex-segments" id="hexSegments"></div>
+    </div>
+
+    <script>
+        const hexDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+
+        // Create hex segment indicators
+        function createHexSegments() {
+            const container = document.getElementById('hexSegments');
+            
+            hexDigits.forEach((hex, index) => {
+                const div = document.createElement('div');
+                div.className = 'hex-segment';
+                div.textContent = hex;
+                div.id = `segment-${index}`;
+                container.appendChild(div);
+            });
+        }
+
+        // Update all displays
+        function updateClock() {
+            const now = new Date();
+            
+            // Get current EST time
+            const estOptions = { timeZone: 'America/New_York', hour12: false };
+            const estString = now.toLocaleString('en-US', estOptions);
+            const [datePart, timePart] = estString.split(', ');
+            const [hours24, minutes, seconds] = timePart.split(':').map(Number);
+            
+            // Convert to 12-hour for display
+            const hours12 = hours24 === 0 ? 12 : (hours24 > 12 ? hours24 - 12 : hours24);
+            const ampm = hours24 >= 12 ? 'PM' : 'AM';
+            
+            // Calculate progress percentages
+            const totalSecondsInHour = (minutes * 60) + seconds;
+            const hexSegment = Math.floor(totalSecondsInHour / 225); // 225 seconds per hex segment
+            const progressInSegment = (totalSecondsInHour % 225) / 225;
+            
+            // 24-hour progress (0-100% over 24 hours)
+            const hourProgress = ((hours24 * 60) + minutes) / (24 * 60) * 100;
+            
+            // Hex progress (0-100% over 60 minutes)
+            const hexProgress = (totalSecondsInHour / 3600) * 100;
+            
+            // 3.75-minute segment progress (0-100% within current hex segment)
+            const segmentProgress = progressInSegment * 100;
+            
+            // Update displays
+            //document.getElementById('currentTime').textContent = `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+            document.getElementById('currentTime').textContent = `${hours12}:${hexDigits[hexSegment]}`;
+            //document.getElementById('currentHex').textContent = `${hexDigits[hexSegment]}`;
+            
+            // Update progress bars
+            document.getElementById('hourProgress').style.width = `${hourProgress}%`;
+            document.getElementById('hexProgress').style.width = `${hexProgress}%`;
+            document.getElementById('segmentProgress').style.width = `${segmentProgress}%`;
+            
+            // Update hex segment indicators
+            const segments = document.querySelectorAll('.hex-segment');
+            segments.forEach((segment, index) => {
+                segment.classList.remove('active', 'passed');
+                
+                if (index === hexSegment) {
+                    segment.classList.add('active');
+                } else if (index < hexSegment) {
+                    segment.classList.add('passed');
+                }
+            });
+        }
+
+        // Initialize
+        createHexSegments();
+        updateClock();
+        
+        // Update every 100ms for smooth animation
+        setInterval(updateClock, 100);
+    </script>
+</body>
+</html>
