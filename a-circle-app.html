@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Think Circular Color</title>
+<style>
+      body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            color: #e0e0e0;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(20, 20, 35, 0.95);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(70, 70, 90, 0.3);
+            padding: 20px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .version {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 12px;
+            border: 2px solid #404060;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background: rgba(30, 30, 50, 0.8);
+            color: #e0e0e0;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+            background: rgba(30, 30, 50, 0.95);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #404060;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);
+        }
+
+        .value-display {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .color-palette {
+            background: rgba(30, 30, 50, 0.8);
+            border: 1px solid #404060;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+            border-color: #00d4ff;
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+        }
+
+        .color-swatch.active {
+            border-color: #00ffaa;
+            border-width: 3px;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+        }
+
+        .custom-color {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #404060;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .word-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(30, 30, 50, 0.6);
+            border: 1px solid #404060;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .word-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .word-item:hover {
+            background: rgba(50, 50, 70, 0.8);
+        }
+
+        .word-item.selected {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+        }
+
+        .word-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #666;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        canvas {
+            display: block;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(30, 30, 50, 0.9);
+            backdrop-filter: blur(10px);
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00d4ff;
+            border: 1px solid #404060;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00d4ff;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(40, 40, 60, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00ffaa, #00d4ff);
+        }
+</style>
+
+</head>
+<body>
+    <div class="sidebar">
+        <div class="title">Think Circular Color (TCC)</div>
+        
+        <div class="input-group">
+            <textarea id="textInput">
+Yes No Hole Wall Anxiety Confidence Anger Well-being Conscience Shrewdness Left-brain Right-brain
+</textarea>
+        </div>
+
+        <div class="input-group">
+            <label for="spokeText">Rays:</label>
+            <textarea id="spokeText">Win-Win decisions
+Cut off the bad stuff
+Learn to say no and hear no from others
+Learn to say yes. Nothing ventured, nothing gained.
+- energy / loss of time, freedom, money
++ energy / less fear, more courage
+- energy / hurt of feelings, body, property
++ energy / less depression, more nutured
+Ethics and Principles
+Intuition. How will the env respond to me.
+Logic, Text, Order
+Association. Imagination
+</textarea>
+        </div>
+
+        <div class="controls">
+            <div class="control-row">
+                <label>Rotation:</label>
+                <input type="range" id="rotation" min="0" max="360" value="360">
+                <span class="value-display" id="rotationValue">0°</span>
+            </div>
+            
+            <div class="control-row">
+                <label>Font:</label>
+                <input type="range" id="fontSize" min="8" max="128" value="16">
+                <span class="value-display" id="fontSizeValue">16px</span>
+            </div>
+            
+            <div class="control-row">
+                <label>Radius:</label>
+                <input type="range" id="circleRadius" min="80" max="5000" value="500">
+                <span class="value-display" id="circleRadiusValue">500px</span>
+            </div>
+            
+            <div class="control-row">
+                <label>Length of Rays:</label>
+                <input type="range" id="spokeLength" min="80" max="5000" value="150">
+                <span class="value-display" id="spokeLengthValue">150px</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Words:</label>
+            <div class="word-list" id="wordList"></div>
+        </div>
+
+        <div class="color-palette">
+            <div class="color-grid" id="colorGrid"></div>
+            <div class="custom-color">
+                <input type="color" id="customColor" value="#ff6b6b">
+                <span>Custom</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="zoom-controls">
+            <button class="zoom-btn" id="zoomIn">+</button>
+            <button class="zoom-btn" id="zoomOut">−</button>
+            <button class="zoom-btn" id="resetView">⌂</button>
+        </div>
+        <div class="info">
+
+        </div>
+    </div>
+
+<script>
+        class CircularTextViewerV5 {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.textInput = document.getElementById('textInput');
+                this.spokeText = document.getElementById('spokeText');
+                this.fontSize = document.getElementById('fontSize');
+                this.circleRadius = document.getElementById('circleRadius');
+                this.rotation = document.getElementById('rotation');
+                this.spokeLength = document.getElementById('spokeLength');
+                this.customColor = document.getElementById('customColor');
+                
+                // Camera properties
+                this.camera = {
+                    x: 0,
+                    y: 0,
+                    zoom: 1
+                };
+                
+                // Interaction state
+                this.isDragging = false;
+                this.lastMouseX = 0;
+                this.lastMouseY = 0;
+                this.selectedWordIndex = -1;
+                
+                // Word colors and data
+                this.wordColors = new Map();
+                this.wordData = [];
+                
+                // Enhanced color palette with modern, vibrant colors
+                this.colors = [
+                    // Neon/Electric colors
+                    '#00ffff', '#00ff88', '#88ff00', '#ffff00', '#ff8800', '#ff0088',
+                    // Deep saturated colors
+                    '#ff4757', '#ff6b7a', '#ff8882', '#ffa726', '#ffcc02', '#7bed9f',
+                    // Purple/Pink spectrum
+                    '#a55eea', '#8e44ad', '#c44569', '#f8b500', '#ff3838', '#ff6348',
+                    // Blue spectrum
+                    '#0066ff', '#0099ff', '#00ccff', '#0066cc', '#3366ff', '#6699ff',
+                    // Teal/Cyan spectrum
+                    '#26d0ce', '#00a8cc', '#0088aa', '#006688', '#20bf6b', '#00d2d3',
+                    // Warm spectrum
+                    '#fd79a8', '#fdcb6e', '#e84393', '#fd79a8', '#orange', '#ff7675',
+                    // Cool darks
+                    '#2d3436', '#636e72', '#74b9ff', '#0984e3', '#6c5ce7', '#a29bfe'
+                ];
+                
+                this.init();
+            }
+            
+            init() {
+                this.resizeCanvas();
+                this.setupEventListeners();
+                this.createColorPalette();
+                this.updateWordList();
+                this.render();
+                
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+            
+            createColorPalette() {
+                const colorGrid = document.getElementById('colorGrid');
+                colorGrid.innerHTML = '';
+                
+                this.colors.forEach((color, index) => {
+                    const swatch = document.createElement('div');
+                    swatch.className = 'color-swatch';
+                    swatch.style.backgroundColor = color;
+                    swatch.addEventListener('click', () => this.selectColor(color));
+                    colorGrid.appendChild(swatch);
+                });
+            }
+            
+            selectColor(color) {
+                if (this.selectedWordIndex >= 0) {
+                    this.wordColors.set(this.selectedWordIndex, color);
+                    this.updateWordList();
+                    this.render();
+                }
+                
+                // Update active swatch
+                document.querySelectorAll('.color-swatch').forEach(swatch => {
+                    swatch.classList.remove('active');
+                    if (swatch.style.backgroundColor === this.rgbToHex(color)) {
+                        swatch.classList.add('active');
+                    }
+                });
+            }
+            
+            rgbToHex(color) {
+                if (color.startsWith('#')) return color;
+                const ctx = document.createElement('canvas').getContext('2d');
+                ctx.fillStyle = color;
+                return ctx.fillStyle;
+            }
+            
+            updateWordList() {
+                const text = this.textInput.value.trim();
+                const words = text.split(/\s+/).filter(word => word.length > 0);
+                const wordList = document.getElementById('wordList');
+                
+                wordList.innerHTML = '';
+                this.wordData = [];
+                
+                words.forEach((word, index) => {
+                    this.wordData.push({ word, index });
+                    
+                    const wordItem = document.createElement('div');
+                    wordItem.className = 'word-item';
+                    if (index === this.selectedWordIndex) {
+                        wordItem.classList.add('selected');
+                    }
+                    
+                    const colorBox = document.createElement('div');
+                    colorBox.className = 'word-color';
+                    colorBox.style.backgroundColor = this.wordColors.get(index) || '#404060';
+                    
+                    const wordText = document.createElement('span');
+                    wordText.textContent = word;
+                    
+                    wordItem.appendChild(colorBox);
+                    wordItem.appendChild(wordText);
+                    wordItem.addEventListener('click', () => this.selectWord(index));
+                    
+                    wordList.appendChild(wordItem);
+                });
+            }
+            
+            selectWord(index) {
+                this.selectedWordIndex = index;
+                this.updateWordList();
+            }
+            
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+                this.render();
+            }
+            
+            setupEventListeners() {
+                // Text input
+                this.textInput.addEventListener('input', () => {
+                    this.updateWordList();
+                    this.render();
+                });
+                this.spokeText.addEventListener('input', () => this.render());
+                
+                // Controls
+                this.rotation.addEventListener('input', (e) => {
+                    document.getElementById('rotationValue').textContent = e.target.value + '°';
+                    this.render();
+                });
+                
+                this.fontSize.addEventListener('input', (e) => {
+                    document.getElementById('fontSizeValue').textContent = e.target.value + 'px';
+                    this.render();
+                });
+                
+                this.circleRadius.addEventListener('input', (e) => {
+                    document.getElementById('circleRadiusValue').textContent = e.target.value + 'px';
+                    this.render();
+                });
+                
+                this.spokeLength.addEventListener('input', (e) => {
+                    document.getElementById('spokeLengthValue').textContent = e.target.value + 'px';
+                    this.render();
+                });
+                
+                this.customColor.addEventListener('change', (e) => {
+                    this.selectColor(e.target.value);
+                });
+                
+                // Mouse interactions
+                this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.canvas.addEventListener('mouseup', () => this.handleMouseUp());
+                this.canvas.addEventListener('wheel', (e) => this.handleWheel(e));
+                this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+                
+                // Zoom controls
+                document.getElementById('zoomIn').addEventListener('click', () => this.zoomIn());
+                document.getElementById('zoomOut').addEventListener('click', () => this.zoomOut());
+                document.getElementById('resetView').addEventListener('click', () => this.resetView());
+            }
+            
+            handleCanvasClick(e) {
+                if (this.isDragging) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / this.camera.zoom - this.camera.x;
+                const y = (e.clientY - rect.top) / this.camera.zoom - this.camera.y;
+                
+                const centerX = this.canvas.width / (2 * this.camera.zoom);
+                const centerY = this.canvas.height / (2 * this.camera.zoom);
+                
+                const text = this.textInput.value.trim();
+                const words = text.split(/\s+/).filter(word => word.length > 0);
+                
+                if (words.length === 0) return;
+                
+                const radius = parseInt(this.circleRadius.value);
+                const baseRotation = (parseInt(this.rotation.value) * Math.PI) / 180;
+                
+                // Check if click is within the circle
+                const dist = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+                if (dist > radius) return;
+                
+                // Calculate which slice was clicked
+                const angle = Math.atan2(y - centerY, x - centerX) + Math.PI / 2;
+                const normalizedAngle = ((angle - baseRotation) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+                const sliceAngle = (2 * Math.PI) / words.length;
+                const clickedSlice = Math.floor(normalizedAngle / sliceAngle);
+                
+                this.selectWord(clickedSlice);
+            }
+            
+            handleMouseDown(e) {
+                this.isDragging = true;
+                this.lastMouseX = e.clientX;
+                this.lastMouseY = e.clientY;
+            }
+            
+            handleMouseMove(e) {
+                if (!this.isDragging) return;
+                
+                const deltaX = e.clientX - this.lastMouseX;
+                const deltaY = e.clientY - this.lastMouseY;
+                
+                this.camera.x += deltaX / this.camera.zoom;
+                this.camera.y += deltaY / this.camera.zoom;
+                
+                this.lastMouseX = e.clientX;
+                this.lastMouseY = e.clientY;
+                
+                this.render();
+            }
+            
+            handleMouseUp() {
+                this.isDragging = false;
+            }
+            
+            handleWheel(e) {
+                e.preventDefault();
+                
+                const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+                const newZoom = Math.max(0.1, Math.min(5, this.camera.zoom * zoomFactor));
+                
+                if (newZoom !== this.camera.zoom) {
+                    this.camera.zoom = newZoom;
+                    this.render();
+                }
+            }
+            
+            zoomIn() {
+                this.camera.zoom = Math.min(5, this.camera.zoom * 1.2);
+                this.render();
+            }
+            
+            zoomOut() {
+                this.camera.zoom = Math.max(0.1, this.camera.zoom / 1.2);
+                this.render();
+            }
+            
+            resetView() {
+                this.camera.x = 0;
+                this.camera.y = 0;
+                this.camera.zoom = 1;
+                this.render();
+            }
+            
+            drawTextOnSpoke(text, startX, startY, endX, endY, fontSize) {
+                if (!text || !text.trim()) return;
+                
+                this.ctx.font = `${fontSize}px Arial`;
+                this.ctx.fillStyle = '#e0e0e0';
+                this.ctx.textAlign = 'left';
+                this.ctx.textBaseline = 'top';
+                
+                const angle = Math.atan2(endY - startY, endX - startX);
+                const distance = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+                
+                this.ctx.save();
+                this.ctx.translate(startX, startY);
+                this.ctx.rotate(angle);
+                
+                // Draw text along the spoke
+                let currentX = 10; // Start a bit away from the circle
+                for (let char of text) {
+                    this.ctx.fillText(char, currentX, 0);
+                    currentX += this.ctx.measureText(char).width + 1;
+                }
+                
+                this.ctx.restore();
+            }
+            
+            render() {
+                // Clear canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Apply camera transform
+                this.ctx.save();
+                this.ctx.scale(this.camera.zoom, this.camera.zoom);
+                this.ctx.translate(this.camera.x, this.camera.y);
+                
+                const text = this.textInput.value.trim();
+                const words = text.split(/\s+/).filter(word => word.length > 0);
+                const spokeLines = this.spokeText.value.split('\n');
+                
+                if (words.length === 0) {
+                    this.ctx.restore();
+                    return;
+                }
+                
+                const centerX = this.canvas.width / (2 * this.camera.zoom);
+                const centerY = this.canvas.height / (2 * this.camera.zoom);
+                const radius = parseInt(this.circleRadius.value);
+                const fontSize = parseInt(this.fontSize.value);
+                const spokeLength = parseInt(this.spokeLength.value);
+                const baseRotation = (parseInt(this.rotation.value) * Math.PI) / 180;
+                
+                const sliceAngle = (2 * Math.PI) / words.length;
+                
+                // Draw pie slices
+                words.forEach((word, index) => {
+                    const startAngle = index * sliceAngle + baseRotation - Math.PI / 2;
+                    const endAngle = (index + 1) * sliceAngle + baseRotation - Math.PI / 2;
+                    
+                    // Draw slice background
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(centerX, centerY);
+                    this.ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                    this.ctx.closePath();
+                    
+                    const sliceColor = this.wordColors.get(index) || '#2d3436';
+                    this.ctx.fillStyle = sliceColor;
+                    this.ctx.fill();
+                    
+                    // Draw slice border
+                    this.ctx.strokeStyle = '#404060';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.stroke();
+                    
+                    // Highlight selected slice
+                    if (index === this.selectedWordIndex) {
+                        this.ctx.strokeStyle = '#00ffaa';
+                        this.ctx.lineWidth = 3;
+                        this.ctx.stroke();
+                        
+                        // Add glow effect
+                        this.ctx.shadowColor = '#00ffaa';
+                        this.ctx.shadowBlur = 15;
+                        this.ctx.stroke();
+                        this.ctx.shadowBlur = 0;
+                    }
+                    
+                    // Draw word on the circle
+                    const midAngle = startAngle + sliceAngle / 2;
+                    const textX = centerX + Math.cos(midAngle) * (radius * 0.7);
+                    const textY = centerY + Math.sin(midAngle) * (radius * 0.7);
+                    
+                    this.ctx.save();
+                    this.ctx.translate(textX, textY);
+                    this.ctx.rotate(midAngle + Math.PI / 2);
+                    this.ctx.font = `${fontSize}px Arial`;
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    
+                    // Add text shadow for better readability
+                    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+                    this.ctx.shadowBlur = 4;
+                    this.ctx.shadowOffsetX = 1;
+                    this.ctx.shadowOffsetY = 1;
+                    
+                    this.ctx.fillText(word, 0, 0);
+                    this.ctx.restore();
+                    
+                    // Draw spoke
+                    const spokeStartX = centerX + Math.cos(midAngle) * radius;
+                    const spokeStartY = centerY + Math.sin(midAngle) * radius;
+                    const spokeEndX = centerX + Math.cos(midAngle) * (radius + spokeLength);
+                    const spokeEndY = centerY + Math.sin(midAngle) * (radius + spokeLength);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(spokeStartX, spokeStartY);
+                    this.ctx.lineTo(spokeEndX, spokeEndY);
+                    this.ctx.strokeStyle = '#606080';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                    
+                    // Draw spoke text
+                    if (spokeLines[index]) {
+                        this.drawTextOnSpoke(
+                            spokeLines[index],
+                            spokeStartX,
+                            spokeStartY,
+                            spokeEndX,
+                            spokeEndY,
+                            fontSize * 0.8
+                        );
+                    }
+                });
+                
+                // Draw center circle with glow
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
+                this.ctx.fillStyle = '#00d4ff';
+                this.ctx.shadowColor = '#00d4ff';
+                this.ctx.shadowBlur = 20;
+                this.ctx.fill();
+                this.ctx.shadowBlur = 0;
+                
+                this.ctx.restore();
+            }
+        }
+        
+        // Initialize the viewer
+        new CircularTextViewerV5();
+
+</script>
+
+</body>
+</html>
