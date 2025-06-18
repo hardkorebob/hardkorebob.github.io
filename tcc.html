@@ -1,387 +1,534 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Think Circular Color</title>
-<style>
-      body {
+    <style>
+* {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f0f23);
             color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Prevent zoom on inputs */
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
         }
 
-        .sidebar {
-            width: 350px;
-            background: rgba(20, 20, 35, 0.95);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(70, 70, 90, 0.3);
-            padding: 20px;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+        .container {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            height: 100vh;
+            position: relative;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #1e1e3f, #0a0a1a);
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            /* Better touch handling */
+            touch-action: manipulation;
+        }
+
+        #canvas:active {
+            cursor: grabbing;
+        }
+
+        .controls-panel {
+            width: 350px;
+            background: rgba(30, 30, 60, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(100, 100, 160, 0.3);
+            padding: 20px;
             overflow-y: auto;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+            /* Mobile optimization */
+            -webkit-overflow-scrolling: touch;
         }
 
-        .title {
-            font-size: 26px;
-            font-weight: bold;
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .canvas-container {
+                height: 60vh;
+                order: 1;
+            }
+            
+            .controls-panel {
+                width: 100%;
+                height: 40vh;
+                border-left: none;
+                border-top: 1px solid rgba(100, 100, 160, 0.3);
+                order: 2;
+                padding: 15px;
+                box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        /* Portrait phone optimization */
+        @media (max-width: 480px) and (orientation: portrait) {
+            .canvas-container {
+                height: 50vh;
+            }
+            
+            .controls-panel {
+                height: 50vh;
+                padding: 12px;
+            }
+            
+            .control-group {
+                margin-bottom: 20px;
+                padding: 12px;
+            }
+        }
+
+        /* Landscape phone optimization */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .container {
+                flex-direction: row;
+            }
+            
+            .canvas-container {
+                width: 65%;
+                height: 100vh;
+                order: 1;
+            }
+            
+            .controls-panel {
+                width: 35%;
+                height: 100vh;
+                border-left: 1px solid rgba(100, 100, 160, 0.3);
+                border-top: none;
+                order: 2;
+                padding: 10px;
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+            }
+            
+            .control-group {
+                margin-bottom: 15px;
+                padding: 10px;
+            }
+            
+            .control-group h3 {
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(40, 40, 80, 0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(100, 100, 160, 0.2);
+        }
+
+        .control-group h3 {
             color: #00d4ff;
-            margin-bottom: 10px;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-        }
-
-        .version {
-            font-size: 12px;
-            color: #888;
-            text-align: center;
             margin-bottom: 15px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        label {
-            font-weight: 600;
-            color: #b0b0b0;
-            font-size: 14px;
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #b0b0c0;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px; /* Increased for touch */
+            background: rgba(20, 20, 40, 0.8);
+            border: 1px solid rgba(100, 100, 160, 0.3);
+            border-radius: 6px; /* Slightly larger for mobile */
+            color: #e0e0e0;
+            font-size: 16px; /* Prevent zoom on iOS */
+            /* Touch-friendly styles */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         textarea {
-            width: 100%;
             height: 80px;
-            padding: 12px;
-            border: 2px solid #404060;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: inherit;
             resize: vertical;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-            background: rgba(30, 30, 50, 0.8);
-            color: #e0e0e0;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: #00d4ff;
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
-            background: rgba(30, 30, 50, 0.95);
-        }
-
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .control-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         input[type="range"] {
-            flex: 1;
-            height: 6px;
-            border-radius: 3px;
-            background: #404060;
-            outline: none;
+            width: 100%;
+            margin: 10px 0;
+            height: 8px; /* Larger touch target */
             -webkit-appearance: none;
+            appearance: none;
+            background: rgba(100, 100, 160, 0.3);
+            border-radius: 4px;
+            outline: none;
         }
 
+        /* Range slider thumb styles */
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            background: #00d4ff;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
         }
 
         input[type="range"]::-moz-range-thumb {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            background: #00d4ff;
             cursor: pointer;
             border: none;
-            box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
         }
 
-        .value-display {
-            min-width: 40px;
-            text-align: center;
-            font-weight: 600;
+        .range-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .range-value {
+            background: rgba(0, 212, 255, 0.2);
             color: #00d4ff;
+            padding: 4px 10px; /* Larger touch target */
+            border-radius: 12px;
+            font-size: 12px;
+            min-width: 50px;
+            text-align: center;
         }
 
-        .color-palette {
-            background: rgba(30, 30, 50, 0.8);
-            border: 1px solid #404060;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 10px;
+        .color-section {
+            margin-top: 20px;
         }
 
         .color-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); /* Responsive grid */
+            gap: 10px; /* Larger gaps for touch */
             margin-bottom: 15px;
         }
 
         .color-swatch {
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            border: 2px solid transparent;
+            width: 40px; /* Larger for touch */
+            height: 40px;
+            border-radius: 50%;
             cursor: pointer;
+            border: 2px solid transparent;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            /* Better touch feedback */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .color-swatch:hover {
+        .color-swatch:hover,
+        .color-swatch:active {
             transform: scale(1.1);
             border-color: #00d4ff;
-            box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
         }
 
         .color-swatch.active {
             border-color: #00ffaa;
-            border-width: 3px;
-            transform: scale(1.1);
             box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
         }
 
-        .custom-color {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        input[type="color"] {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #404060;
-            border-radius: 8px;
-            cursor: pointer;
-            background: transparent;
+        /* Mobile touch adjustments */
+        @media (max-width: 768px) {
+            .color-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+            }
+            
+            .color-swatch {
+                width: 36px;
+                height: 36px;
+            }
         }
 
         .word-list {
             max-height: 200px;
             overflow-y: auto;
-            background: rgba(30, 30, 50, 0.6);
-            border: 1px solid #404060;
-            border-radius: 8px;
-            padding: 5px;
+            border: 1px solid rgba(100, 100, 160, 0.3);
+            border-radius: 4px;
+            background: rgba(20, 20, 40, 0.5);
+            -webkit-overflow-scrolling: touch;
         }
 
         .word-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 5px 8px;
-            border-radius: 4px;
+            padding: 12px 8px; /* Larger touch target */
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            border-bottom: 1px solid rgba(100, 100, 160, 0.1);
+            transition: background 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .word-item:hover {
-            background: rgba(50, 50, 70, 0.8);
+        .word-item:hover,
+        .word-item:active {
+            background: rgba(60, 60, 120, 0.3);
         }
 
         .word-item.selected {
             background: rgba(0, 212, 255, 0.2);
-            border: 1px solid rgba(0, 212, 255, 0.4);
+            border-left: 3px solid #00d4ff;
         }
 
         .word-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            border: 1px solid #666;
-        }
-
-        .canvas-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(135deg, #0f1419 0%, #1a1a2e 50%, #16213e 100%);
-        }
-
-        canvas {
-            display: block;
-            cursor: grab;
-        }
-
-        canvas:active {
-            cursor: grabbing;
+            width: 18px; /* Slightly larger */
+            height: 18px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
         }
 
         .zoom-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 100;
+            gap: 12px; /* Larger gaps */
+            margin-top: 15px;
         }
 
         .zoom-btn {
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 50%;
-            background: rgba(30, 30, 50, 0.9);
-            backdrop-filter: blur(10px);
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #00d4ff;
-            border: 1px solid #404060;
-        }
-
-        .zoom-btn:hover {
+            flex: 1;
+            padding: 12px 8px; /* Larger touch target */
             background: rgba(0, 212, 255, 0.2);
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
-        }
-
-        .info {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00d4ff;
+            border-radius: 6px;
             color: #00d4ff;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 212, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px; /* Larger font */
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px; /* iOS recommendation */
         }
 
-        /* Custom scrollbar */
+        .zoom-btn:hover,
+        .zoom-btn:active {
+            background: rgba(0, 212, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .animation-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .anim-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: rgba(0, 255, 170, 0.2);
+            border: 1px solid #00ffaa;
+            border-radius: 6px;
+            color: #00ffaa;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px;
+        }
+
+        .anim-btn:hover,
+        .anim-btn:active {
+            background: rgba(0, 255, 170, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .anim-btn.active {
+            background: rgba(0, 255, 170, 0.4);
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 44px; /* Larger touch target */
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        /* Custom scrollbar for mobile */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(40, 40, 60, 0.5);
-            border-radius: 4px;
+            background: rgba(40, 40, 80, 0.3);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
-            border-radius: 4px;
+            background: rgba(100, 100, 160, 0.5);
+            border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #00ffaa, #00d4ff);
+            background: rgba(100, 100, 160, 0.7);
         }
-</style>
 
+        /* Mobile scrollbar adjustments */
+        @media (max-width: 768px) {
+            ::-webkit-scrollbar {
+                width: 4px;
+            }
+        }
+
+        /* Prevent text selection on interactive elements */
+        .color-swatch,
+        .word-item,
+        .zoom-btn,
+        .anim-btn {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Safe area adjustments for notched devices */
+        @supports (padding: max(0px)) {
+            .controls-panel {
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+            
+            @media (max-width: 768px) {
+                .controls-panel {
+                    padding-left: max(15px, env(safe-area-inset-left));
+                    padding-right: max(15px, env(safe-area-inset-right));
+                    padding-bottom: max(15px, env(safe-area-inset-bottom));
+                }
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="title">Think Circular Color (TCC)</div>
+    <div class="container">
+        <div class="canvas-container">
+            <canvas id="canvas"></canvas>
+        </div>
         
-        <div class="input-group">
-            <textarea id="textInput">
-Yes No Hole Wall Anxiety Confidence Anger Well-being Conscience Shrewdness Left-brain Right-brain
-</textarea>
-        </div>
-
-        <div class="input-group">
-            <label for="spokeText">Rays:</label>
-            <textarea id="spokeText">Win-Win decisions
-Cut off the bad stuff
-Learn to say no and hear no from others
-Learn to say yes. Nothing ventured, nothing gained.
-- energy / loss of time, freedom, money
-+ energy / less fear, more courage
-- energy / hurt of feelings, body, property
-+ energy / less depression, more nutured
-Ethics and Principles
-Intuition. How will the env respond to me.
-Logic, Text, Order
-Association. Imagination
-</textarea>
-        </div>
-
-        <div class="controls">
-            <div class="control-row">
-                <label>Rotation:</label>
-                <input type="range" id="rotation" min="0" max="360" value="360">
-                <span class="value-display" id="rotationValue">360°</span>
+        <div class="controls-panel">
+            <div class="control-group">
+                <div class="input-group">
+                    <textarea id="textInput" placeholder="Enter words separated by spaces...">Innovation Creativity Design Technology Future Progress Discovery Excellence Achievement Vision</textarea>
+                </div>
+                <div class="input-group">
+                    <textarea id="spokeText" placeholder="Enter text for each spoke...">Leading the way
+Building tomorrow
+Crafting solutions
+Advancing science
+Shaping destiny
+Driving change
+Exploring possibilities
+Achieving greatness
+Realizing dreams
+Creating magic</textarea>
+                </div>
             </div>
-            
-            <div class="control-row">
-                <label>Font:</label>
-                <input type="range" id="fontSize" min="8" max="128" value="16">
-                <span class="value-display" id="fontSizeValue">16px</span>
-            </div>
-            
-            <div class="control-row">
-                <label>Radius:</label>
-                <input type="range" id="circleRadius" min="80" max="5000" value="500">
-                <span class="value-display" id="circleRadiusValue">500px</span>
-            </div>
-            
-            <div class="control-row">
-                <label>Length of Rays:</label>
-                <input type="range" id="spokeLength" min="80" max="5000" value="150">
-                <span class="value-display" id="spokeLengthValue">150px</span>
-            </div>
-        </div>
 
-        <div class="input-group">
-            <label>Words:</label>
-            <div class="word-list" id="wordList"></div>
-        </div>
+            <div class="control-group">
+                <div class="animation-controls">
+                    <button class="anim-btn active" id="toggleAnimation">Pause</button>
+                    <button class="anim-btn" id="resetAnimation">Reset</button>
+                </div>
+                <div class="input-group">
 
-        <div class="color-palette">
-            <div class="color-grid" id="colorGrid"></div>
-            <div class="custom-color">
-                <input type="color" id="customColor" value="#ff6b6b">
-                <span>Custom</span>
+                    <input type="range" id="animSpeed" min="10" max="100" value="50">
+                </div>
+                    <div class="range-display">
+                        <label>Speed</label>
+                        <span class="range-value" id="speedValue">50</span>
+                    </div>
+            </div>
+
+            <div class="control-group">
+                <div class="input-group">
+                    <div class="range-display">
+                        <label>Font</label>
+                        <span class="range-value" id="fontSizeValue">16px</span>
+                    </div>
+                    <input type="range" id="fontSize" min="6" max="128" value="16">
+                </div>
+                <div class="input-group">
+                    <div class="range-display">
+                        <label>Radius</label>
+                        <span class="range-value" id="circleRadiusValue">350px</span>
+                    </div>
+                    <input type="range" id="circleRadius" min="10" max="5000" value="350">
+                </div>
+                <div class="input-group">
+                    <div class="range-display">
+                        <label>Rotate</label>
+                        <span class="range-value" id="rotationValue">0°</span>
+                    </div>
+                    <input type="range" id="rotation" min="0" max="360" value="0">
+                </div>
+                <div class="input-group">
+                    <div class="range-display">
+                        <label>Rays</label>
+                        <span class="range-value" id="spokeLengthValue">150px</span>
+                    </div>
+                    <input type="range" id="spokeLength" min="20" max="5000" value="150">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="color-section">
+                    <div class="color-grid" id="colorGrid"></div>
+                    <div class="input-group">
+                        <label>Custom</label>
+                        <input type="color" id="customColor" value="#fd7000">
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="word-list" id="wordList"></div>
+            </div>
+
+            <div class="control-group">
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoomIn">Zoom In</button>
+                    <button class="zoom-btn" id="zoomOut">Zoom Out</button>
+                    <button class="zoom-btn" id="resetView">Reset View</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="canvas-container">
-        <canvas id="canvas"></canvas>
-        <div class="zoom-controls">
-            <button class="zoom-btn" id="zoomIn">+</button>
-            <button class="zoom-btn" id="zoomOut">−</button>
-            <button class="zoom-btn" id="resetView">⌂</button>
-        </div>
-        <div class="info">
-
-        </div>
-    </div>
-
-<script>
-        class CircularTextViewerV5 {
+    <script>
+        class CircularTextViewerV6 {
             constructor() {
                 this.canvas = document.getElementById('canvas');
                 this.ctx = this.canvas.getContext('2d');
@@ -392,6 +539,7 @@ Association. Imagination
                 this.rotation = document.getElementById('rotation');
                 this.spokeLength = document.getElementById('spokeLength');
                 this.customColor = document.getElementById('customColor');
+                this.animSpeed = document.getElementById('animSpeed');
                 
                 // Camera properties
                 this.camera = {
@@ -410,6 +558,14 @@ Association. Imagination
                 this.wordColors = new Map();
                 this.wordData = [];
                 
+                // Animation properties
+                this.isAnimating = true;
+                this.animationRotation = 360;
+                this.animationDirection = 1; // 1 for forward, -1 for backward
+                this.animationFrame = null;
+                this.lastColorChange = Date.now();
+                this.colorChangeInterval = 7500; // Change colors every 2 seconds
+                
                 // Enhanced color palette with modern, vibrant colors
                 this.colors = [
                     // Neon/Electric colors
@@ -419,9 +575,9 @@ Association. Imagination
                     // Purple/Pink spectrum
                     '#a55eea', '#8e44ad', '#c44569', '#f8b500', '#ff3838', '#ff6348',
                     // Blue spectrum
-                    '#0066ff', 
+                    '#0066ff', '#74b9ff', '#0984e3', '#6c5ce7',
                     // Cool darks
-                    '#2d3436', '#636e72', '#74b9ff', '#0984e3', '#6c5ce7',
+                    '#2d3436', '#636e72',
                 ];
                 
                 this.init();
@@ -432,9 +588,76 @@ Association. Imagination
                 this.setupEventListeners();
                 this.createColorPalette();
                 this.updateWordList();
-                this.render();
+                this.startAnimation();
                 
                 window.addEventListener('resize', () => this.resizeCanvas());
+            }
+
+            startAnimation() {
+                if (this.animationFrame) {
+                    cancelAnimationFrame(this.animationFrame);
+                }
+                this.animate();
+            }
+
+            animate() {
+                if (this.isAnimating) {
+                    const speed = parseInt(this.animSpeed.value) / 1000; // Convert to smoother animation
+                    
+                    // Update rotation
+                    this.animationRotation += this.animationDirection * speed;
+                    
+                    // Reverse direction at boundaries
+                    if (this.animationRotation >= 360) {
+                        this.animationRotation = 360;
+                        this.animationDirection = -1;
+                    } else if (this.animationRotation <= 0) {
+                        this.animationRotation = 0;
+                        this.animationDirection = 1;
+                    }
+                    
+                    // Update rotation slider to match animation
+                    this.rotation.value = Math.round(this.animationRotation);
+                    document.getElementById('rotationValue').textContent = Math.round(this.animationRotation) + '°';
+                    
+                    // Change colors periodically
+                    const now = Date.now();
+                    if (now - this.lastColorChange > this.colorChangeInterval) {
+                        this.randomizeColors();
+                        this.lastColorChange = now;
+                    }
+                    
+                    this.render();
+                }
+                
+                this.animationFrame = requestAnimationFrame(() => this.animate());
+            }
+
+            randomizeColors() {
+                const text = this.textInput.value.trim();
+                const words = text.split(/\s+/).filter(word => word.length > 0);
+                
+                words.forEach((word, index) => {
+                    const randomColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+                    this.wordColors.set(index, randomColor);
+                });
+                
+                this.updateWordList();
+            }
+
+            toggleAnimation() {
+                this.isAnimating = !this.isAnimating;
+                const btn = document.getElementById('toggleAnimation');
+                btn.textContent = this.isAnimating ? 'Pause' : 'Play';
+                btn.classList.toggle('active', this.isAnimating);
+            }
+
+            resetAnimation() {
+                this.animationRotation = 0;
+                this.animationDirection = 1;
+                this.rotation.value = 0;
+                document.getElementById('rotationValue').textContent = '0°';
+                this.randomizeColors();
             }
             
             createColorPalette() {
@@ -527,8 +750,12 @@ Association. Imagination
                 
                 // Controls
                 this.rotation.addEventListener('input', (e) => {
-                    document.getElementById('rotationValue').textContent = e.target.value + '°';
-                    this.render();
+                    // Only update manual rotation if animation is paused
+                    if (!this.isAnimating) {
+                        this.animationRotation = parseInt(e.target.value);
+                        document.getElementById('rotationValue').textContent = e.target.value + '°';
+                        this.render();
+                    }
                 });
                 
                 this.fontSize.addEventListener('input', (e) => {
@@ -545,9 +772,22 @@ Association. Imagination
                     document.getElementById('spokeLengthValue').textContent = e.target.value + 'px';
                     this.render();
                 });
+
+                this.animSpeed.addEventListener('input', (e) => {
+                    document.getElementById('speedValue').textContent = e.target.value;
+                });
                 
                 this.customColor.addEventListener('change', (e) => {
                     this.selectColor(e.target.value);
+                });
+
+                // Animation controls
+                document.getElementById('toggleAnimation').addEventListener('click', () => {
+                    this.toggleAnimation();
+                });
+
+                document.getElementById('resetAnimation').addEventListener('click', () => {
+                    this.resetAnimation();
                 });
                 
                 // Mouse interactions
@@ -579,7 +819,7 @@ Association. Imagination
                 if (words.length === 0) return;
                 
                 const radius = parseInt(this.circleRadius.value);
-                const baseRotation = (parseInt(this.rotation.value) * Math.PI) / 180;
+                const baseRotation = (this.animationRotation * Math.PI) / 180;
                 
                 // Check if click is within the circle
                 const dist = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
@@ -657,7 +897,6 @@ Association. Imagination
                 this.ctx.textBaseline = 'top';
                 
                 const angle = Math.atan2(endY - startY, endX - startX);
-                const distance = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
                 
                 this.ctx.save();
                 this.ctx.translate(startX, startY);
@@ -696,7 +935,7 @@ Association. Imagination
                 const radius = parseInt(this.circleRadius.value);
                 const fontSize = parseInt(this.fontSize.value);
                 const spokeLength = parseInt(this.spokeLength.value);
-                const baseRotation = (parseInt(this.rotation.value) * Math.PI) / 180;
+                const baseRotation = (this.animationRotation * Math.PI) / 180;
                 
                 const sliceAngle = (2 * Math.PI) / words.length;
                 
@@ -711,7 +950,7 @@ Association. Imagination
                     this.ctx.arc(centerX, centerY, radius, startAngle, endAngle);
                     this.ctx.closePath();
                     
-                    const sliceColor = this.wordColors.get(index) || '#2d3436';
+                    const sliceColor = this.wordColors.get(index) || this.colors[index % this.colors.length];
                     this.ctx.fillStyle = sliceColor;
                     this.ctx.fill();
                     
@@ -795,9 +1034,7 @@ Association. Imagination
         }
         
         // Initialize the viewer
-        new CircularTextViewerV5();
-
-</script>
-
+        new CircularTextViewerV6();
+    </script>
 </body>
 </html>
