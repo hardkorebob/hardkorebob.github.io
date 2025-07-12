@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiritual Idle Tech - Custom Themes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #8b5cf6;
+            --primary-light: #c4b5fd;
+            --primary-dark: #7c3aed;
+            --secondary: #ec4899;
+            --secondary-light: #f9a8d4;
+            --background: #f5f3ff;
+            --background-alt: #ede9fe;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --card: #ffffff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+            transition: background 0.5s ease;
+        }
+
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(var(--primary-light) 1px, transparent 1px),
+                radial-gradient(var(--primary-light) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            opacity: 0.1;
+            z-index: 1;
+            transition: all 0.5s ease;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--card);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex: 1;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stats-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--background-alt);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-weight: 500;
+        }
+
+        .stats-icon {
+            color: var(--warning);
+        }
+
+        .theme-button {
+            background: var(--background-alt);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-button:hover {
+            background: var(--primary-light);
+            transform: rotate(15deg);
+        }
+
+        /* Theme Modal */
+        .theme-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .theme-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .theme-container {
+            background: var(--card);
+            width: 90%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(20px);
+            transition: transform 0.4s ease;
+        }
+
+        .theme-modal.active .theme-container {
+            transform: translateY(0);
+        }
+
+        .theme-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-button:hover {
+            color: var(--primary);
+        }
+
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .theme-option {
+            height: 60px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-option.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .theme-custom {
+            background: linear-gradient(135deg, var(--background-alt), var(--card));
+            border: 2px dashed var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .custom-theme-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 15px 0 10px;
+            color: var(--text);
+        }
+
+        .color-pickers {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .color-picker {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .color-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .color-input {
+            width: 100%;
+            height: 40px;
+            border-radius: 10px;
+            border: 2px solid var(--background-alt);
+            cursor: pointer;
+        }
+
+        .theme-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .reset-btn {
+            background: var(--background-alt);
+            color: var(--text);
+        }
+
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Rest of your existing CSS styles */
+        /* ... [All your existing CSS styles remain unchanged] ... */
+        
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 16px;
+            padding-bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .stat-item h3 {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .stat-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .combo-display {
+            text-align: center;
+            margin-top: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 6px;
+            font-weight: 700;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+
+        /* Mantra Reference */
+        .mantra-reference {
+            background-color: var(--background-alt);
+            border: 1px solid var(--primary-light);
+            border-radius: 12px;
+            padding: 6px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+            font-weight: 500;
+            margin-top: 2px;
+            margin-bottom: 4px;
+        }
+
+        /* Mantra Button */
+        .mantra-button {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 20px;
+            padding: 32px 20px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s;
+        }
+
+        .mantra-button:active {
+            transform: scale(0.98);
+        }
+
+        .mantra-button::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .mantra-button h2 {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            animation: textPulse 2s infinite;
+        }
+
+        @keyframes textPulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .mantra-button p {
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .mantra-progress {
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mantra-progress-bar {
+            height: 100%;
+            background-color: var(--warning);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .mantra-progress-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 4px;
+        }
+
+        .mantra-progress-marker {
+            width: 2px;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .bonus-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--warning);
+            color: var(--primary-dark);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Floating Numbers */
+        .floating-number {
+            position: absolute;
+            pointer-events: none;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--warning);
+            animation: floatUp 1s forwards;
+            z-index: 15;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-40px); }
+        }
+
+        /* Resource Grid */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .resource-card {
+            background-color: var(--card);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid var(--background-alt);
+            margin-top: 8px;
+        }
+
+        .resource-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-bottom: 8px;
+
+        }
+
+        .karma-icon { background-color: rgba(245, 158, 11, 0.1); }
+        .shard-icon { background-color: rgba(139, 92, 246, 0.1); }
+        .level-icon { background-color: rgba(59, 130, 246, 0.1); }
+
+        .resource-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .karma-value { color: var(--warning); }
+        .shard-value { color: var(--primary); }
+        .level-value { color: var(--info); }
+
+        .resource-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* Experience Bar */
+        .experience-container {
+            margin-top: 8px;
+        }
+
+        .experience-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .experience-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--info), var(--primary));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .experience-text {
+            font-size: 0.75rem;
+            text-align: center;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* Abilities Section */
+        .abilities-section {
+            background-color: var(--card);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 8px;
+        }
+
+        .abilities-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .abilities-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .ability-card {
+            background-color: var(--background-alt);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--primary-light);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ability-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .ability-card:active {
+            transform: translateY(0);
+        }
+
+        .ability-card.active {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .ability-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .ability-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .ability-cost {
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        /* DARTS Section */
+        .darts-section {
+            background-color: var(--background-alt);
+            border-radius: 16px;
+            padding: 10px;
+            border: 1px solid var(--primary-light);
+        }
+
+        .darts-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .darts-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .dart-card {
+            background-color: var(--card);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .dart-letter {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .dart-value {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* Upgrades Tab */
+        .upgrades-tab {
+            background: linear-gradient(135deg, var(--info), #0ea5e9);
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .upgrades-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .upgrades-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .lock-notice {
+            background-color: rgba(254, 243, 199, 0.9);
+            border: 2px solid var(--warning);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .lock-icon {
+            font-size: 2rem;
+            color: var(--warning);
+            margin-bottom: 8px;
+        }
+
+        .lock-text {
+            font-weight: 500;
+            color: #92400e;
+        }
+
+        .upgrades-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .upgrade-card {
+            background-color: var(--card);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+        }
+
+        .upgrade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .upgrade-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background-color: var(--background-alt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .upgrade-details {
+            flex: 1;
+        }
+
+        .upgrade-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .upgrade-effect {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .upgrade-cost {
+            text-align: right;
+            min-width: 100px;
+        }
+
+        .cost-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .owned-count {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .purchase-button {
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .purchase-button:hover {
+            opacity: 0.9;
+        }
+
+        /* Prestige Tab */
+        .prestige-tab {
+            background: linear-gradient(135deg, var(--warning), #f97316);
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .prestige-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .prestige-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .prestige-level-card {
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.8), rgba(252, 211, 77, 0.8));
+            border-radius: 16px;
+            padding: 24px 16px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .prestige-icon {
+            font-size: 2.5rem;
+            color: var(--warning);
+            margin-bottom: 12px;
+        }
+
+        .prestige-level-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+
+        .prestige-level {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ea580c, #c2410c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .bonus-section {
+            background-color: var(--card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .bonus-title {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .bonus-list {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .bonus-item {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bonus-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--background-alt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .prestige-requirements {
+            background-color: var(--background-alt);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .requirements-title {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .requirements-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .requirements-sub {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background-color: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .prestige-button {
+            width: 100%;
+            background: linear-gradient(90deg, var(--warning), #ea580c);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prestige-button:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .prestige-button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .prestige-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 1.5s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card);
+            border-top: 1px solid #e2e8f0;
+            z-index: 30;
+        }
+
+        .nav-container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            padding: 4px 0;
+        }
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 4px;
+            color: #94a3b8;
+            text-decoration: none;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+        }
+
+        .nav-tab.active::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 0 0 3px 3px;
+        }
+
+        .tab-icon {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+        }
+
+        .tab-label {
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="game-title">Spiritual Idle Tech</h1>
+                <div class="stats-display">
+                    <span class="stats-icon">⚡</span>
+                    <span id="totalMantras">0</span>
+                </div>
+            </div>
+            <button class="theme-button" id="themeButton">
+                <i class="fas fa-palette"></i>
+            </button>
+        </header>
+
+        <!-- Theme Modal -->
+        <div class="theme-modal" id="themeModal">
+            <div class="theme-container">
+                <div class="theme-header">
+                    <h2 class="theme-title">Customize Theme</h2>
+                    <button class="close-button" id="closeModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <h3 class="custom-theme-title">Preset Themes</h3>
+                <div class="theme-options">
+                    <div class="theme-option active" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);" data-theme="default"></div>
+                    <div class="theme-option" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4);" data-theme="ocean"></div>
+                    <div class="theme-option" style="background: linear-gradient(135deg, #10b981, #84cc16);" data-theme="forest"></div>
+                    <div class="theme-option" style="background: linear-gradient(135deg, #f97316, #eab308);" data-theme="sunset"></div>
+                    <div class="theme-option" style="background: linear-gradient(135deg, #a855f7, #d946ef);" data-theme="magic"></div>
+                    <div class="theme-option theme-custom" data-theme="custom">
+                        <i class="fas fa-plus"></i>
+                        <span>Custom</span>
+                    </div>
+                </div>
+                
+                <h3 class="custom-theme-title">Create Custom Theme</h3>
+                <div class="color-pickers">
+                    <div class="color-picker">
+                        <label class="color-label">Primary Color</label>
+                        <input type="color" class="color-input" id="primaryColor" value="#8b5cf6">
+                    </div>
+                    <div class="color-picker">
+                        <label class="color-label">Secondary Color</label>
+                        <input type="color" class="color-input" id="secondaryColor" value="#ec4899">
+                    </div>
+                    <div class="color-picker">
+                        <label class="color-label">Background</label>
+                        <input type="color" class="color-input" id="backgroundColor" value="#f5f3ff">
+                    </div>
+                    <div class="color-picker">
+                        <label class="color-label">Text Color</label>
+                        <input type="color" class="color-input" id="textColor" value="#1e293b">
+                    </div>
+                </div>
+                
+                <div class="theme-actions">
+                    <button class="theme-btn reset-btn" id="resetTheme">Reset</button>
+                    <button class="theme-btn save-btn" id="saveTheme">Save Theme</button>
+                </div>
+            </div>
+        </div>
+
+        <main>
+            <!-- Game Tab -->
+            <div id="gameTab" class="tab-content active">
+                <div class="stats-panel">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <h3>Bhakti Points</h3>
+                            <div class="value" id="bhaktiPoints">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <h3>Per Second</h3>
+                            <div class="value" id="mantrasPerSecond">0</div>
+                        </div>
+                    </div>
+                    <div id="comboDisplay" class="combo-display" style="display: none;">
+                        Combo: <span id="comboMultiplier">1</span>x
+                    </div>
+                </div>
+
+                <div class="mantra-reference">
+                    Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare Hare Rāma Hare Rāma Rāma Rāma Hare Hare
+                </div>
+
+                <div class="mantra-button" id="mantraButton">
+                    <h2 id="currentMantra">Hare</h2>
+                    <p><span id="mantraIndex">1</span></p>
+     
+                    <p>+<span id="clickPower">1</span>TP</p>
+                    
+                    <div class="mantra-progress">
+                        <div class="mantra-progress-bar" id="mantraProgressBar" style="width: 6.25%;"></div>
+                        <div class="mantra-progress-markers">
+                            <div class="mantra-progress-marker"></div>
+                            <div class="mantra-progress-marker"></div>
+                            <div class="mantra-progress-marker"></div>
+                            <div class="mantra-progress-marker"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="bonusIndicator" class="bonus-indicator" style="display: none;">2x Bonus!</div>
+
+                <div class="resource-grid">
+                    <div class="resource-card">
+                        <div class="resource-icon karma-icon">⭐</div>
+                        <div class="resource-value karma-value" id="karmaCoins">0</div>
+                        <div class="resource-label">Karma</div>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon shard-icon">👑</div>
+                        <div class="resource-value shard-value" id="enlightenmentShards">0</div>
+                        <div class="resource-label">Shards</div>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon level-icon">📊</div>
+                        <div class="resource-value level-value">Lv.<span id="level">1</span></div>
+                        <div class="resource-label">Level</div>
+                    </div>
+                </div>
+
+                <div class="experience-container">
+                    <div class="experience-bar">
+                        <div class="experience-progress" id="experienceBar" style="width: 0%;"></div>
+                    </div>
+                    <div class="experience-text">
+                        Level Progress: <span id="experiencePercent">0</span>%
+                    </div>
+                </div>
+
+                <div class="abilities-section">
+                    <div class="abilities-grid">
+                        <div class="ability-card" id="divineInspiration">
+                            <div class="ability-header">
+                                <span>✨</span>
+                                <span class="ability-name">Divine Inspiration</span>
+                            </div>
+                            <div class="ability-cost">Cost: 100 KC</div>
+                            <div class="ability-timer" id="divineTimer" style="display: none;">10s</div>
+                        </div>
+                        <div class="ability-card" id="karmicBoost">
+                            <div class="ability-header">
+                                <span>⭐</span>
+                                <span class="ability-name">Karmic Boost</span>
+                            </div>
+                            <div class="ability-cost">Cost: 500 KC</div>
+                            <div class="ability-timer" id="karmicTimer" style="display: none;">20s</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="darts-section">
+                    <div class="darts-grid">
+                        <div class="dart-card">
+                            <div class="dart-letter">D</div>
+                            <div class="dart-value" id="dartD">1.00</div>
+                        </div>
+                        <div class="dart-card">
+                            <div class="dart-letter">A</div>
+                            <div class="dart-value" id="dartA">1.00</div>
+                        </div>
+                        <div class="dart-card">
+                            <div class="dart-letter">R</div>
+                            <div class="dart-value" id="dartR">1.00</div>
+                        </div>
+                        <div class="dart-card">
+                            <div class="dart-letter">T</div>
+                            <div class="dart-value" id="dartT">1.00</div>
+                        </div>
+                        <div class="dart-card">
+                            <div class="dart-letter">S</div>
+                            <div class="dart-value" id="dartS">1.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upgrades Tab -->
+            <div id="upgradesTab" class="tab-content">
+                <div class="upgrades-tab">
+                    <h2 class="upgrades-title">Spiritual Upgrades</h2>
+                    <p class="upgrades-subtitle">Enhance your practice</p>
+                </div>
+
+                <div id="lockNotice" class="lock-notice">
+                    <div class="lock-icon">🔒</div>
+                    <p class="lock-text">Automation unlocks at Level 5</p>
+                </div>
+
+                <div class="upgrades-list">
+                    <div class="upgrade-card">
+                        <div class="upgrade-header">
+                            <div class="upgrade-icon">🖱️</div>
+                            <div class="upgrade-details">
+                                <div class="upgrade-name">Double Tap Devotion</div>
+                                <div class="upgrade-effect">2x click power</div>
+                            </div>
+                            <div class="upgrade-cost">
+                                <div class="cost-value" id="doubleClickCost">50 BP</div>
+                                <div class="owned-count">Owned: <span id="doubleClickCount">0</span></div>
+                            </div>
+                        </div>
+                        <button class="purchase-button" data-upgrade="doubleClick">Purchase</button>
+                    </div>
+
+                    <div class="upgrade-card">
+                        <div class="upgrade-header">
+                            <div class="upgrade-icon">🖱️</div>
+                            <div class="upgrade-details">
+                                <div class="upgrade-name">Trinity Touch</div>
+                                <div class="upgrade-effect">3x click power</div>
+                            </div>
+                            <div class="upgrade-cost">
+                                <div class="cost-value" id="tripleClickCost">500 BP</div>
+                                <div class="owned-count">Owned: <span id="tripleClickCount">0</span></div>
+                            </div>
+                        </div>
+                        <button class="purchase-button" data-upgrade="tripleClick">Purchase</button>
+                    </div>
+
+                    <div class="upgrade-card">
+                        <div class="upgrade-header">
+                            <div class="upgrade-icon">💻</div>
+                            <div class="upgrade-details">
+                                <div class="upgrade-name">Apprentice Chanter</div>
+                                <div class="upgrade-effect">+1 mantra/sec</div>
+                            </div>
+                            <div class="upgrade-cost">
+                                <div class="cost-value" id="basicChanterCost">100 BP</div>
+                                <div class="owned-count">Owned: <span id="basicChanterCount">0</span></div>
+                            </div>
+                        </div>
+                        <button class="purchase-button" data-upgrade="basicChanter">Purchase</button>
+                    </div>
+
+                    <div class="upgrade-card">
+                        <div class="upgrade-header">
+                            <div class="upgrade-icon">💻</div>
+                            <div class="upgrade-details">
+                                <div class="upgrade-name">Devoted Chanter</div>
+                                <div class="upgrade-effect">+5 mantras/sec</div>
+                            </div>
+                            <div class="upgrade-cost">
+                                <div class="cost-value" id="advancedChanterCost">1000 BP</div>
+                                <div class="owned-count">Owned: <span id="advancedChanterCount">0</span></div>
+                            </div>
+                        </div>
+                        <button class="purchase-button" data-upgrade="advancedChanter">Purchase</button>
+                    </div>
+
+                    <div class="upgrade-card">
+                        <div class="upgrade-header">
+                            <div class="upgrade-icon">🎯</div>
+                            <div class="upgrade-details">
+                                <div class="upgrade-name">DARTS Amplifier</div>
+                                <div class="upgrade-effect">2x DARTS progress</div>
+                            </div>
+                            <div class="upgrade-cost">
+                                <div class="cost-value" id="dartsBoostCost">5000 BP</div>
+                                <div class="owned-count">Owned: <span id="dartsBoostCount">0</span></div>
+                            </div>
+                        </div>
+                        <button class="purchase-button" data-upgrade="dartsBoost">Purchase</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prestige Tab -->
+            <div id="prestigeTab" class="tab-content">
+                <div class="prestige-tab">
+                    <h2 class="prestige-title">Transcendence</h2>
+                    <p class="prestige-subtitle">Reset for permanent bonuses</p>
+                </div>
+
+                <div class="prestige-level-card">
+                    <div class="prestige-icon">👑</div>
+                    <div class="prestige-level-label">Prestige Level</div>
+                    <div class="prestige-level" id="prestigeLevel">0</div>
+                </div>
+
+                <div class="bonus-section">
+                    <h3 class="bonus-title">Current Bonuses</h3>
+                    <ul class="bonus-list">
+                        <li class="bonus-item">
+                            <div class="bonus-icon">🖱️</div>
+                            <span>Base click power: +<span id="prestigeClickBonus">0</span></span>
+                        </li>
+                        <li class="bonus-item">
+                            <div class="bonus-icon">🎁</div>
+                            <span>Enlightenment shards on prestige: <span id="prestigeShardBonus">0</span></span>
+                        </li>
+                        <li class="bonus-item">
+                            <div class="bonus-icon">🎯</div>
+                            <span>DARTS base levels: +<span id="prestigeDartsBonus">0.0</span></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="prestige-requirements">
+                    <h3 class="requirements-title">Next Prestige Requirements</h3>
+                    <div class="requirements-value" id="prestigeRequirement">1,000,000 mantras</div>
+                    <div class="requirements-sub">Current: <span id="currentMantras">0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="prestigeProgress" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <button class="prestige-button" id="prestigeButton" disabled>Not Ready</button>
+            </div>
+        </main>
+
+        <nav>
+            <div class="nav-container">
+                <div class="nav-tabs">
+                    <a href="#" class="nav-tab active" data-tab="gameTab">
+                        <div class="tab-icon">⚡</div>
+                        <div class="tab-label">Play</div>
+                    </a>
+                    <a href="#" class="nav-tab" data-tab="upgradesTab">
+                        <div class="tab-icon">📈</div>
+                        <div class="tab-label">Upgrades</div>
+                    </a>
+                    <a href="#" class="nav-tab" data-tab="prestigeTab">
+                        <div class="tab-icon">👑</div>
+                        <div class="tab-label">Prestige</div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // Theme customization functionality
+        const themeModal = document.getElementById('themeModal');
+        const themeButton = document.getElementById('themeButton');
+        const closeModal = document.getElementById('closeModal');
+        const resetTheme = document.getElementById('resetTheme');
+        const saveTheme = document.getElementById('saveTheme');
+        const primaryColor = document.getElementById('primaryColor');
+        const secondaryColor = document.getElementById('secondaryColor');
+        const backgroundColor = document.getElementById('backgroundColor');
+        const textColor = document.getElementById('textColor');
+        const themeOptions = document.querySelectorAll('.theme-option');
+        
+        // Open theme modal
+        themeButton.addEventListener('click', () => {
+            themeModal.classList.add('active');
+        });
+        
+        // Close theme modal
+        closeModal.addEventListener('click', () => {
+            themeModal.classList.remove('active');
+        });
+        
+        // Reset to default theme
+        resetTheme.addEventListener('click', () => {
+            applyTheme('#8b5cf6', '#ec4899', '#f5f3ff', '#1e293b');
+            setActiveThemeOption('default');
+            localStorage.removeItem('savedTheme');
+        });
+        
+        // Save custom theme
+        saveTheme.addEventListener('click', () => {
+            const theme = {
+                primary: primaryColor.value,
+                secondary: secondaryColor.value,
+                background: backgroundColor.value,
+                text: textColor.value
+            };
+            
+            applyTheme(theme.primary, theme.secondary, theme.background, theme.text);
+            localStorage.setItem('savedTheme', JSON.stringify(theme));
+            themeModal.classList.remove('active');
+            
+            // Show confirmation
+            showThemeSavedMessage();
+        });
+        
+        // Apply a theme to the app
+        function applyTheme(primary, secondary, background, text) {
+            document.documentElement.style.setProperty('--primary', primary);
+            document.documentElement.style.setProperty('--primary-light', lightenColor(primary, 30));
+            document.documentElement.style.setProperty('--primary-dark', darkenColor(primary, 20));
+            document.documentElement.style.setProperty('--secondary', secondary);
+            document.documentElement.style.setProperty('--secondary-light', lightenColor(secondary, 30));
+            document.documentElement.style.setProperty('--background', background);
+            document.documentElement.style.setProperty('--background-alt', lightenColor(background, 5));
+            document.documentElement.style.setProperty('--text', text);
+            document.documentElement.style.setProperty('--text-light', lightenColor(text, 40));
+            
+            // Update color pickers
+            primaryColor.value = primary;
+            secondaryColor.value = secondary;
+            backgroundColor.value = background;
+            textColor.value = text;
+        }
+        
+        // Lighten a color
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            
+            return '#' + (
+                0x1000000 +
+                (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+                (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+                (B < 255 ? (B < 1 ? 0 : B) : 255)
+            ).toString(16).slice(1);
+        }
+        
+        // Darken a color
+        function darkenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) - amt;
+            const G = (num >> 8 & 0x00FF) - amt;
+            const B = (num & 0x0000FF) - amt;
+            
+            return '#' + (
+                0x1000000 +
+                (R > 0 ? (R < 255 ? R : 255) : 0) * 0x10000 +
+                (G > 0 ? (G < 255 ? G : 255) : 0) * 0x100 +
+                (B > 0 ? (B < 255 ? B : 255) : 0)
+            ).toString(16).slice(1);
+        }
+        
+        // Set active theme option
+        function setActiveThemeOption(themeName) {
+            themeOptions.forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.theme === themeName) {
+                    option.classList.add('active');
+                }
+            });
+        }
+        
+        // Apply preset themes
+        themeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const theme = option.dataset.theme;
+                setActiveThemeOption(theme);
+                
+                switch (theme) {
+                    case 'ocean':
+                        applyTheme('#0ea5e9', '#06b6d4', '#f0f9ff', '#083344');
+                        break;
+                    case 'forest':
+                        applyTheme('#10b981', '#84cc16', '#f0fdf4', '#052e16');
+                        break;
+                    case 'sunset':
+                        applyTheme('#f97316', '#eab308', '#fffbeb', '#431407');
+                        break;
+                    case 'magic':
+                        applyTheme('#a855f7', '#d946ef', '#fdf4ff', '#3b0764');
+                        break;
+                    case 'custom':
+                        // Keep current custom values
+                        break;
+                    default: // default theme
+                        applyTheme('#8b5cf6', '#ec4899', '#f5f3ff', '#1e293b');
+                }
+            });
+        });
+        
+        // Show theme saved message
+        function showThemeSavedMessage() {
+            const message = document.createElement('div');
+            message.textContent = 'Theme saved!';
+            message.style.position = 'fixed';
+            message.style.bottom = '20px';
+            message.style.left = '50%';
+            message.style.transform = 'translateX(-50%)';
+            message.style.backgroundColor = 'var(--primary)';
+            message.style.color = 'white';
+            message.style.padding = '10px 20px';
+            message.style.borderRadius = '50px';
+            message.style.zIndex = '1000';
+            message.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            message.style.animation = 'fadeInOut 3s forwards';
+            
+            document.body.appendChild(message);
+            
+            // Remove message after animation
+            setTimeout(() => {
+                message.remove();
+            }, 3000);
+        }
+        
+        // Add fadeInOut animation to styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+                20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Load saved theme if exists
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('savedTheme');
+            if (savedTheme) {
+                const theme = JSON.parse(savedTheme);
+                applyTheme(theme.primary, theme.secondary, theme.background, theme.text);
+                setActiveThemeOption('custom');
+            }
+        });
+
+        // Game state
+        const state = {
+            // Maha-mantra sequence
+            mahaMantra: [
+                "Hare", "Kṛṣṇa", "Hare", "Kṛṣṇa",
+                "Kṛṣṇa", "Kṛṣṇa", "Hare", "Hare",
+                "Hare", "Rāma", "Hare", "Rāma",
+                "Rāma", "Rāma", "Hare", "Hare"
+            ],
+            
+            // Core game state
+            bhaktiPoints: 0,
+            karmaCoins: 0,
+            enlightenmentShards: 0,
+            mantrasPerSecond: 0,
+            totalMantras: 0,
+            clickPower: 1,
+            comboMultiplier: 1,
+            lastClickTime: Date.now(),
+            mantraIndex: 0,
+            
+            // Progression state
+            level: 1,
+            experience: 0,
+            prestigeLevel: 0,
+            activeTab: 'gameTab',
+            
+            // DARTS state
+            dartsLevels: {
+                D: 1, 
+                A: 1, 
+                R: 1, 
+                T: 1, 
+                S: 1
+            },
+            
+            // Upgrades state
+            purchasedUpgrades: {
+                doubleClick: 0,
+                tripleClick: 0,
+                basicChanter: 0,
+                advancedChanter: 0,
+                masterChanter: 0,
+                dartsBoost: 0
+            },
+            
+            automationUnlocked: false,
+            
+            // Active bonuses
+            activeBonus: null,
+            bonusTimeLeft: 0,
+            
+            // Animation
+            floatingNumbers: [],
+            particles: [],
+            floatingNumberId: 0,
+            particleId: 0,
+            
+            // Performance tracking
+            lastUpdateTime: Date.now(),
+            particleCount: 0,
+            maxParticles: 100
+        };
+
+        // Upgrade costs
+        const upgradeCosts = {
+            doubleClick: 50,
+            tripleClick: 500,
+            basicChanter: 100,
+            advancedChanter: 1000,
+            masterChanter: 10000,
+            dartsBoost: 5000
+        };
+
+        // DOM Elements
+        const elements = {
+            totalMantras: document.getElementById('totalMantras'),
+            bhaktiPoints: document.getElementById('bhaktiPoints'),
+            mantrasPerSecond: document.getElementById('mantrasPerSecond'),
+            comboDisplay: document.getElementById('comboDisplay'),
+            comboMultiplier: document.getElementById('comboMultiplier'),
+            currentMantra: document.getElementById('currentMantra'),
+            mantraIndex: document.getElementById('mantraIndex'),
+            clickPower: document.getElementById('clickPower'),
+            mantraProgressBar: document.getElementById('mantraProgressBar'),
+            bonusIndicator: document.getElementById('bonusIndicator'),
+            karmaCoins: document.getElementById('karmaCoins'),
+            enlightenmentShards: document.getElementById('enlightenmentShards'),
+            level: document.getElementById('level'),
+            experienceBar: document.getElementById('experienceBar'),
+            experiencePercent: document.getElementById('experiencePercent'),
+            divineTimer: document.getElementById('divineTimer'),
+            karmicTimer: document.getElementById('karmicTimer'),
+            dartD: document.getElementById('dartD'),
+            dartA: document.getElementById('dartA'),
+            dartR: document.getElementById('dartR'),
+            dartT: document.getElementById('dartT'),
+            dartS: document.getElementById('dartS'),
+            doubleClickCost: document.getElementById('doubleClickCost'),
+            doubleClickCount: document.getElementById('doubleClickCount'),
+            tripleClickCost: document.getElementById('tripleClickCost'),
+            tripleClickCount: document.getElementById('tripleClickCount'),
+            basicChanterCost: document.getElementById('basicChanterCost'),
+            basicChanterCount: document.getElementById('basicChanterCount'),
+            advancedChanterCost: document.getElementById('advancedChanterCost'),
+            advancedChanterCount: document.getElementById('advancedChanterCount'),
+            dartsBoostCost: document.getElementById('dartsBoostCost'),
+            dartsBoostCount: document.getElementById('dartsBoostCount'),
+            lockNotice: document.getElementById('lockNotice'),
+            prestigeLevel: document.getElementById('prestigeLevel'),
+            prestigeClickBonus: document.getElementById('prestigeClickBonus'),
+            prestigeShardBonus: document.getElementById('prestigeShardBonus'),
+            prestigeDartsBonus: document.getElementById('prestigeDartsBonus'),
+            prestigeRequirement: document.getElementById('prestigeRequirement'),
+            currentMantras: document.getElementById('currentMantras'),
+            prestigeProgress: document.getElementById('prestigeProgress'),
+            prestigeButton: document.getElementById('prestigeButton')
+        };
+
+        // Format numbers for display
+        function formatNumber(num) {
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return Math.floor(num).toString();
+        }
+
+        // Create a floating number animation
+        function createFloatingNumber(value, x, y, isCombo, isRound) {
+            // Don't create too many floating numbers
+            if (document.querySelectorAll('.floating-number').length > 10) return;
+            
+            const id = `floating-${state.floatingNumberId++}`;
+            const floatingNumber = document.createElement('div');
+            floatingNumber.id = id;
+            floatingNumber.className = 'floating-number';
+            floatingNumber.textContent = `+${value}${isRound ? ' Round Complete!' : isCombo ? ' Combo!' : ''}`;
+            floatingNumber.style.left = `${x}px`;
+            floatingNumber.style.top = `${y}px`;
+            
+            if (isRound) {
+                floatingNumber.style.fontSize = '1.5rem';
+                floatingNumber.style.color = '#fde047';
+            } else if (isCombo) {
+                floatingNumber.style.fontSize = '1.25rem';
+                floatingNumber.style.color = '#fcd34d';
+            }
+            
+            document.body.appendChild(floatingNumber);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                const element = document.getElementById(id);
+                if (element) element.remove();
+            }, 1000);
+        }
+
+        // Create a particle effect
+        function createParticle(x, y) {
+            // Don't create too many particles
+            if (state.particleCount > state.maxParticles) return;
+            
+            state.particleCount++;
+            
+            const id = `particle-${state.particleId++}`;
+            const particle = document.createElement('div');
+            particle.id = id;
+            particle.className = 'particle';
+            
+            const size = Math.random() * 6 + 2;
+            const colors = ['#a78bfa', '#c4b5fd', '#f0abfc', '#f9a8d4', '#fbcfe8'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.backgroundColor = color;
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            
+            document.body.appendChild(particle);
+            
+            // Animate particle
+            let opacity = 1;
+            let posY = y;
+            const animation = setInterval(() => {
+                opacity -= 0.02;
+                posY -= 1;
+                
+                particle.style.opacity = opacity;
+                particle.style.top = `${posY}px`;
+                
+                if (opacity <= 0) {
+                    clearInterval(animation);
+                    particle.remove();
+                    state.particleCount--;
+                }
+            }, 30);
+        }
+
+        // Handle mantra click
+        function handleMantraClick(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            // Create particles (limit to 5)
+            for (let i = 0; i < Math.min(5, state.maxParticles - state.particleCount); i++) {
+                setTimeout(() => {
+                    createParticle(
+                        x + (Math.random() - 0.5) * 40,
+                        y + (Math.random() - 0.5) * 40
+                    );
+                }, i * 50);
+            }
+            
+            // Update mantra index
+            const newMantraIndex = (state.mantraIndex + 1) % 16;
+            state.mantraIndex = newMantraIndex;
+            
+            // Bonus for completing full mantra
+            let roundBonus = 1;
+            if (newMantraIndex === 0 && state.mantraIndex === 15) {
+                roundBonus = 2; // Double points for completing a round
+                state.enlightenmentShards += 0.1;
+                elements.bonusIndicator.style.display = 'block';
+                setTimeout(() => {
+                    elements.bonusIndicator.style.display = 'none';
+                }, 2000);
+            }
+            
+            // Update combo
+            const timeSinceLastClick = Date.now() - state.lastClickTime;
+            if (timeSinceLastClick < 500) {
+                state.comboMultiplier = Math.min(state.comboMultiplier + 0.1, 5);
+                elements.comboDisplay.style.display = 'block';
+            } else if (timeSinceLastClick > 2000) {
+                state.comboMultiplier = 1;
+                elements.comboDisplay.style.display = 'none';
+            }
+            state.lastClickTime = Date.now();
+            
+            // Calculate click value
+            let clickValue = state.clickPower;
+            
+            // Apply upgrades
+            if (state.purchasedUpgrades.doubleClick > 0) {
+                clickValue *= Math.pow(2, state.purchasedUpgrades.doubleClick);
+            }
+            if (state.purchasedUpgrades.tripleClick > 0) {
+                clickValue *= Math.pow(3, state.purchasedUpgrades.tripleClick);
+            }
+            
+            clickValue *= state.comboMultiplier;
+            clickValue *= roundBonus;
+            
+            // Apply click
+            state.bhaktiPoints += clickValue;
+            state.totalMantras += clickValue;
+            state.experience += clickValue / 10;
+            
+            // Update DARTS progress
+            const dartKeys = Object.keys(state.dartsLevels);
+            const randomDart = dartKeys[Math.floor(Math.random() * dartKeys.length)];
+            state.dartsLevels[randomDart] += 0.01;
+            
+            // Show floating number
+            createFloatingNumber(
+                Math.floor(clickValue),
+                x,
+                y,
+                state.comboMultiplier > 1,
+                roundBonus > 1
+            );
+            
+            // Update UI
+            updateUI();
+        }
+
+        // Purchase upgrade
+        function purchaseUpgrade(upgradeId) {
+            const cost = upgradeCosts[upgradeId] * Math.pow(1.5, state.purchasedUpgrades[upgradeId]);
+            
+            if (state.bhaktiPoints >= cost) {
+                state.bhaktiPoints -= cost;
+                state.purchasedUpgrades[upgradeId]++;
+                updateUI();
+            }
+        }
+
+        // Activate ability
+        function activateAbility(abilityId) {
+            if (abilityId === 'divineInspiration' && state.karmaCoins >= 100 && !state.activeBonus) {
+                state.karmaCoins -= 100;
+                state.activeBonus = 'divineInspiration';
+                state.bonusTimeLeft = 10;
+                elements.divineTimer.style.display = 'block';
+                
+                // Add active class
+                document.getElementById('divineInspiration').classList.add('active');
+            }
+            else if (abilityId === 'karmicBoost' && state.karmaCoins >= 500 && !state.activeBonus) {
+                state.karmaCoins -= 500;
+                state.activeBonus = 'karmicBoost';
+                state.bonusTimeLeft = 20;
+                elements.karmicTimer.style.display = 'block';
+                
+                // Add active class
+                document.getElementById('karmicBoost').classList.add('active');
+            }
+            
+            updateUI();
+        }
+
+        // Prestige
+        function prestige() {
+            const canPrestige = state.totalMantras >= Math.pow(10, 6 + state.prestigeLevel * 2);
+            
+            if (canPrestige) {
+                // Reset main resources
+                state.bhaktiPoints = 0;
+                state.totalMantras = 0;
+                state.mantrasPerSecond = 0;
+                state.purchasedUpgrades = {
+                    doubleClick: 0,
+                    tripleClick: 0,
+                    basicChanter: 0,
+                    advancedChanter: 0,
+                    masterChanter: 0,
+                    dartsBoost: 0
+                };
+                state.level = 1;
+                state.experience = 0;
+                
+                // Increase prestige level
+                state.prestigeLevel++;
+                
+                // Apply permanent bonuses
+                state.enlightenmentShards += state.prestigeLevel * 10;
+                state.clickPower += state.prestigeLevel;
+                
+                // Update DARTS progress
+                for (const key in state.dartsLevels) {
+                    state.dartsLevels[key] += 0.5;
+                }
+                
+                // Create prestige particles (limit to 50)
+                for (let i = 0; i < Math.min(50, state.maxParticles - state.particleCount); i++) {
+                    setTimeout(() => {
+                        createParticle(
+                            window.innerWidth / 2 + (Math.random() - 0.5) * 200,
+                            window.innerHeight / 2 + (Math.random() - 0.5) * 200
+                        );
+                    }, i * 30);
+                }
+                
+                updateUI();
+            }
+        }
+
+        // Update the UI with current state
+        function updateUI() {
+            // Format numbers
+            elements.totalMantras.textContent = formatNumber(state.totalMantras);
+            elements.bhaktiPoints.textContent = formatNumber(state.bhaktiPoints);
+            elements.mantrasPerSecond.textContent = formatNumber(state.mantrasPerSecond);
+            elements.comboMultiplier.textContent = state.comboMultiplier.toFixed(1);
+            elements.currentMantra.textContent = state.mahaMantra[state.mantraIndex];
+            elements.mantraIndex.textContent = state.mantraIndex + 1;
+            elements.clickPower.textContent = formatNumber(state.clickPower * state.comboMultiplier);
+            elements.karmaCoins.textContent = formatNumber(state.karmaCoins);
+            elements.enlightenmentShards.textContent = formatNumber(state.enlightenmentShards);
+            elements.level.textContent = state.level;
+            
+            // Update DARTS values
+            elements.dartD.textContent = state.dartsLevels.D.toFixed(2);
+            elements.dartA.textContent = state.dartsLevels.A.toFixed(2);
+            elements.dartR.textContent = state.dartsLevels.R.toFixed(2);
+            elements.dartT.textContent = state.dartsLevels.T.toFixed(2);
+            elements.dartS.textContent = state.dartsLevels.S.toFixed(2);
+            
+            // Update upgrade counts and costs
+            elements.doubleClickCount.textContent = state.purchasedUpgrades.doubleClick;
+            elements.doubleClickCost.textContent = formatNumber(upgradeCosts.doubleClick * Math.pow(1.5, state.purchasedUpgrades.doubleClick)) + ' BP';
+            
+            elements.tripleClickCount.textContent = state.purchasedUpgrades.tripleClick;
+            elements.tripleClickCost.textContent = formatNumber(upgradeCosts.tripleClick * Math.pow(1.5, state.purchasedUpgrades.tripleClick)) + ' BP';
+            
+            elements.basicChanterCount.textContent = state.purchasedUpgrades.basicChanter;
+            elements.basicChanterCost.textContent = formatNumber(upgradeCosts.basicChanter * Math.pow(1.5, state.purchasedUpgrades.basicChanter)) + ' BP';
+            
+            elements.advancedChanterCount.textContent = state.purchasedUpgrades.advancedChanter;
+            elements.advancedChanterCost.textContent = formatNumber(upgradeCosts.advancedChanter * Math.pow(1.5, state.purchasedUpgrades.advancedChanter)) + ' BP';
+            
+            elements.dartsBoostCount.textContent = state.purchasedUpgrades.dartsBoost;
+            elements.dartsBoostCost.textContent = formatNumber(upgradeCosts.dartsBoost * Math.pow(1.5, state.purchasedUpgrades.dartsBoost)) + ' BP';
+            
+            // Update prestige information
+            elements.prestigeLevel.textContent = state.prestigeLevel;
+            elements.prestigeClickBonus.textContent = state.prestigeLevel;
+            elements.prestigeShardBonus.textContent = state.prestigeLevel * 10;
+            elements.prestigeDartsBonus.textContent = (state.prestigeLevel * 0.5).toFixed(1);
+            
+            const prestigeRequirement = Math.pow(10, 6 + state.prestigeLevel * 2);
+            elements.prestigeRequirement.textContent = formatNumber(prestigeRequirement);
+            elements.currentMantras.textContent = formatNumber(state.totalMantras);
+            
+            const prestigeProgress = Math.min(100, (state.totalMantras / prestigeRequirement) * 100);
+            elements.prestigeProgress.style.width = `${prestigeProgress}%`;
+            
+            // Enable/disable prestige button
+            elements.prestigeButton.disabled = !(state.totalMantras >= prestigeRequirement);
+            elements.prestigeButton.textContent = elements.prestigeButton.disabled ? 'Not Ready' : 'Transcend Now';
+            
+            // Update mantra progress
+            const mantraProgress = ((state.mantraIndex + 1) / 16) * 100;
+            elements.mantraProgressBar.style.width = `${mantraProgress}%`;
+            
+            // Update experience bar
+            const requiredExp = state.level * 100;
+            const experiencePercent = Math.min(100, (state.experience / requiredExp) * 100);
+            elements.experienceBar.style.width = `${experiencePercent}%`;
+            elements.experiencePercent.textContent = Math.floor(experiencePercent);
+            
+            // Update ability timers
+            if (state.activeBonus === 'divineInspiration') {
+                elements.divineTimer.textContent = `${state.bonusTimeLeft.toFixed(1)}s`;
+            }
+            if (state.activeBonus === 'karmicBoost') {
+                elements.karmicTimer.textContent = `${state.bonusTimeLeft.toFixed(1)}s`;
+            }
+            
+            // Show/hide lock notice
+            elements.lockNotice.style.display = state.level >= 5 ? 'none' : 'block';
+        }
+
+        // Calculate mantras per second (called only when necessary)
+        function calculateMPS() {
+            let mps = 0;
+            mps += state.purchasedUpgrades.basicChanter * 1;
+            mps += state.purchasedUpgrades.advancedChanter * 5;
+            mps += state.purchasedUpgrades.masterChanter * 25;
+            
+            // Apply DARTS multipliers
+            const dartsMultiplier = Object.values(state.dartsLevels).reduce((acc, level) => acc * (1 + level * 0.1), 1);
+            mps *= dartsMultiplier;
+            
+            // Apply active bonus
+            if (state.activeBonus === 'divineInspiration') {
+                mps *= 5;
+            }
+            
+            state.mantrasPerSecond = mps;
+        }
+
+        // Game loop
+        function gameLoop() {
+            const now = Date.now();
+            const deltaTime = (now - state.lastUpdateTime) / 1000; // in seconds
+            
+            // Generate mantras (based on time passed)
+            if (state.mantrasPerSecond > 0) {
+                const mantrasGenerated = state.mantrasPerSecond * deltaTime;
+                state.bhaktiPoints += mantrasGenerated;
+                state.totalMantras += mantrasGenerated;
+                state.experience += mantrasGenerated / 10;
+            }
+            
+            // Generate karma coins
+            const karmaRate = Math.floor(state.totalMantras / 1000) * (state.activeBonus === 'karmicBoost' ? 2 : 1);
+            if (karmaRate > 0) {
+                // Chance based on time passed
+                const karmaChance = 0.1 * deltaTime * 10; // 10% per second
+                if (Math.random() < karmaChance) {
+                    state.karmaCoins += karmaRate;
+                }
+            }
+            
+            // Update bonus timer
+            if (state.bonusTimeLeft > 0) {
+                state.bonusTimeLeft -= deltaTime;
+                
+                if (state.bonusTimeLeft <= 0) {
+                    state.activeBonus = null;
+                    document.getElementById('divineInspiration').classList.remove('active');
+                    document.getElementById('karmicBoost').classList.remove('active');
+                    elements.divineTimer.style.display = 'none';
+                    elements.karmicTimer.style.display = 'none';
+                }
+            }
+            
+            // Check combo timeout
+            if (now - state.lastClickTime > 2000 && state.comboMultiplier > 1) {
+                state.comboMultiplier = 1;
+                elements.comboDisplay.style.display = 'none';
+            }
+            
+            // Level up check
+            const requiredExp = state.level * 100;
+            if (state.experience >= requiredExp) {
+                state.level++;
+                state.experience -= requiredExp;
+                state.enlightenmentShards++;
+                
+                // Unlock automation at level 5
+                if (state.level === 5) {
+                    state.automationUnlocked = true;
+                }
+                
+                // Create level up particles (limit to 20)
+                for (let i = 0; i < Math.min(20, state.maxParticles - state.particleCount); i++) {
+                    setTimeout(() => {
+                        createParticle(
+                            window.innerWidth / 2 + (Math.random() - 0.5) * 100,
+                            100 + (Math.random() - 0.5) * 50
+                        );
+                    }, i * 30);
+                }
+            }
+            
+            // Update UI at most 10 times per second (for performance)
+            if (now - state.lastUpdateTime > 100) {
+                updateUI();
+                state.lastUpdateTime = now;
+            }
+            
+            // Continue game loop
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize the game
+        function initGame() {
+            // Set up event listeners
+            document.getElementById('mantraButton').addEventListener('click', handleMantraClick);
+            
+            // Set up upgrade buttons
+            document.querySelectorAll('.purchase-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const upgradeId = e.target.dataset.upgrade;
+                    purchaseUpgrade(upgradeId);
+                    calculateMPS(); // Recalculate MPS after upgrade
+                });
+            });
+            
+            // Set up ability buttons
+            document.getElementById('divineInspiration').addEventListener('click', () => {
+                activateAbility('divineInspiration');
+                calculateMPS(); // Recalculate MPS after ability activation
+            });
+            document.getElementById('karmicBoost').addEventListener('click', () => {
+                activateAbility('karmicBoost');
+                calculateMPS(); // Recalculate MPS after ability activation
+            });
+            
+            // Set up prestige button
+            document.getElementById('prestigeButton').addEventListener('click', () => {
+                prestige();
+                calculateMPS(); // Recalculate MPS after prestige
+            });
+            
+            // Set up tab navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = tab.dataset.tab;
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Initial MPS calculation
+            calculateMPS();
+            
+            // Initial UI update
+            updateUI();
+            
+            // Start game loop
+            state.lastUpdateTime = Date.now();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game when the page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
