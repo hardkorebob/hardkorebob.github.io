@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARTS - Hare Kṛṣṇa Mahā-Mantra</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a23 0%, #1a1a40 50%, #2d1b69 100%);
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(78, 205, 196, 0.2) 0%, transparent 50%);
+            animation: cosmicShift 10s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: float 15s infinite linear;
+            box-shadow: 0 0 10px #ffd700;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffd700);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #ffd700;
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+        
+        .algorithm {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mantra-display {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 107, 107, 0.1));
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mantra-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        .mantra-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.8;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            animation: mantraPulse 3s ease-in-out infinite;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .state-display {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4ecdc4;
+            transition: all 0.3s ease;
+        }
+        
+        .state-display:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .state-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            color: #4ecdc4;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .stat-value {
+            color: #ffd700;
+            font-weight: 600;
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #ffd700);
+            border-radius: 6px;
+            transition: width 0.8s ease;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.6);
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progressShine 2s ease-in-out infinite;
+        }
+        
+        .stage-explanation {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stage-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            color: #ffd700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .stage-content {
+            line-height: 1.6;
+        }
+        
+        .offense-list, .relationship-list, .love-stages {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .offense-list li, .relationship-list li, .love-stages li {
+            padding: 5px 0;
+            color: #e0e0e0;
+            font-size: 1rem;
+            border-left: 2px solid transparent;
+            padding-left: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .offense-list li:hover, .relationship-list li:hover, .love-stages li:hover {
+            border-left: 2px solid #4ecdc4;
+            color: #4ecdc4;
+            padding-left: 15px;
+        }
+        
+        .sanskrit-text {
+            font-style: italic;
+            color: #96ceb4;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(150, 206, 180, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #96ceb4;
+        }
+        
+        .darts-framework {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(78, 205, 196, 0.2));
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(78, 205, 196, 0.4);
+            text-align: center;
+        }
+        
+        .darts-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            color: #4ecdc4;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        
+        .darts-letters {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        
+        .darts-letter {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #ff6b6b;
+            text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+            animation: letterFloat 2s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .darts-letter:hover {
+            transform: scale(1.2);
+            color: #ffd700;
+        }
+        
+        .darts-letter:nth-child(1) { animation-delay: 0s; }
+        .darts-letter:nth-child(2) { animation-delay: 0.2s; }
+        .darts-letter:nth-child(3) { animation-delay: 0.4s; }
+        .darts-letter:nth-child(4) { animation-delay: 0.6s; }
+        .darts-letter:nth-child(5) { animation-delay: 0.8s; }
+        
+        .darts-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .controls {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .cycle-counter {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            color: #ffd700;
+            margin-bottom: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+        }
+        
+        .control-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            color: white;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(78, 205, 196, 0.4);
+            background: linear-gradient(45deg, #4ecdc4, #ffd700);
+        }
+        
+        .control-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .chanting .mantra-text {
+            animation: chantingPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes cosmicShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes mantraPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.02); }
+        }
+        
+        @keyframes chantingPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(30deg); }
+        }
+        
+        @keyframes progressShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        @keyframes letterFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes float {
+            0% { 
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { 
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .mantra-text {
+                font-size: 1.5rem;
+            }
+            
+            .control-btn {
+                padding: 12px 25px;
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cosmic-bg"></div>
+    
+    <div class="floating-particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="title">HARE KṚṢṆA MAHĀ-MANTRA</h1>
+            <p class="subtitle">Spiritual Technology Engine</p>
+            <div class="algorithm">∞ Algorithm of Grace: lim chant(n) → prema ∞</div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="panel">
+                <div class="mantra-display" id="mantraDisplay">
+                    <div class="mantra-text" id="mantraText">
+                        Hare Kṛṣṇa Hare Kṛṣṇa<br>
+                        Kṛṣṇa Kṛṣṇa Hare Hare<br>
+                        Hare Rāma Hare Rāma<br>
+                        Rāma Rāma Hare Hare
+                    </div>
+                </div>
+                
+                <div class="state-display">
+                    <div class="state-title">Current Spiritual State</div>
+                    <div class="stat-line">
+                        <span>Mantras chanted:</span>
+                        <span class="stat-value" id="mantraCount">0</span>
+                    </div>
+                    <div class="stat-line">
+                        <span>Current stage:</span>
+                        <span class="stat-value" id="currentStage">Cleansing</span>
+                    </div>
+                    <div class="stat-line">
+                        <span id="progressLabel">Nāma-aparādhas removed:</span>
+                        <span class="stat-value" id="progressValue">0</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="darts-framework">
+                    <div class="darts-title">DARTS Surrender Framework</div>
+                    <div class="darts-letters">
+                        <span class="darts-letter">D</span>
+                        <span class="darts-letter">A</span>
+                        <span class="darts-letter">R</span>
+                        <span class="darts-letter">T</span>
+                        <span class="darts-letter">S</span>
+                    </div>
+                    <div class="darts-description">
+                        <strong>D</strong>ependence | <strong>A</strong>cceptance | <strong>R</strong>ejection | <strong>T</strong>rust | <strong>S</strong>elf-Offering<br>
+                        <em>Chanting embodies all five pillars simultaneously</em>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="stage-explanation" id="stageExplanation">
+                    <div class="stage-title">Stage 1: Cleansing (Nāma-aparādha Removal)</div>
+                    <div class="stage-content">
+                        <p>The holy name is cleansing consciousness of ten offenses:</p>
+                        <ul class="offense-list">
+                            <li>1. Blaspheming devotees</li>
+                            <li>2. Seeing divine names as material</li>
+                            <li>3. Disobeying spiritual master</li>
+                            <li>4. Disparaging scriptures</li>
+                            <li>5. False interpretation of names</li>
+                            <li>6. Sinning under name's protection</li>
+                            <li>7. Awarding names to unqualified</li>
+                            <li>8. Equating with pious activities</li>
+                            <li>9. Inattentive chanting</li>
+                            <li>10. Attachment to materialism</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="cycle-counter">Cycle <span id="cycleCount">0</span> complete</div>
+            <button class="control-btn" id="startBtn">Begin Chanting</button>
+            <button class="control-btn" id="pauseBtn">Pause</button>
+            <button class="control-btn" id="resetBtn">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        // Spiritual state variables
+        let n = 0;
+        const stages = ["Cleansing", "Illumination", "Communion"];
+        let currentStage = 0;
+        let offensesCleared = 0;
+        let awarenessLevel = 0;
+        let loveAwakened = 0;
+        let isChanting = false;
+        let chantingInterval;
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            setInterval(() => {
+                if (particlesContainer.children.length < 50) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                    particle.style.animationDelay = Math.random() * 2 + 's';
+                    
+                    particlesContainer.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 20000);
+                }
+            }, 500);
+        }
+
+        function updateDisplay() {
+            document.getElementById('mantraCount').textContent = n;
+            document.getElementById('currentStage').textContent = stages[currentStage];
+            document.getElementById('cycleCount').textContent = n;
+
+            let progressValue, progressPercent, progressLabel;
+            
+            switch (currentStage) {
+                case 0:
+                    progressValue = offensesCleared;
+                    progressLabel = "Nāma-aparādhas removed:";
+                    break;
+                case 1:
+                    progressValue = awarenessLevel;
+                    progressLabel = "Self-realization level:";
+                    break;
+                case 2:
+                    progressValue = loveAwakened;
+                    progressLabel = "Love (prema) awakened:";
+                    break;
+            }
+            
+            progressPercent = Math.min(progressValue, 100);
+            document.getElementById('progressValue').textContent = currentStage === 0 ? progressValue : `${progressValue}/100`;
+            document.getElementById('progressLabel').textContent = progressLabel;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+            
+            updateStageExplanation();
+        }
+
+        function updateStageExplanation() {
+            const explanations = [
+                {
+                    title: "Stage 1: Cleansing (Nāma-aparādha Removal)",
+                    content: `
+                        <p>The holy name is cleansing consciousness of ten offenses:</p>
+                        <ul class="offense-list">
+                            <li>1. Blaspheming devotees</li>
+                            <li>2. Seeing divine names as material</li>
+                            <li>3. Disobeying spiritual master</li>
+                            <li>4. Disparaging scriptures</li>
+                            <li>5. False interpretation of names</li>
+                            <li>6. Sinning under name's protection</li>
+                            <li>7. Awarding names to unqualified</li>
+                            <li>8. Equating with pious activities</li>
+                            <li>9. Inattentive chanting</li>
+                            <li>10. Attachment to materialism</li>
+                        </ul>
+                    `
+                },
+                {
+                    title: "Stage 2: Illumination (Self-Realization)",
+                    content: `
+                        <p>The mantra reveals our eternal identity:</p>
+                        <div class="sanskrit-text">jīvera 'svarūpa' haya — kṛṣṇera 'nitya-dāsa'<br>
+                        <em>'The living entity's constitutional position is as Kṛṣṇa's eternal servant'</em></div>
+                        <p>Five relationships awaken:</p>
+                        <ul class="relationship-list">
+                            <li>1. Śānta (neutrality) → 2. Dāsya (servitorship)</li>
+                            <li>3. Sakhya (friendship) → 4. Vātsalya (parental) → 5. Madhurya (conjugal lover)</li>
+                        </ul>
+                    `
+                },
+                {
+                    title: "Stage 3: Communion (Rasa Exchange)",
+                    content: `
+                        <p>Continuous loving exchange manifests as:</p>
+                        <ul class="love-stages">
+                            <li>• Prema (love) → Māna (loving anger)</li>
+                            <li>• Praṇaya (affection) → Rāga (attachment)</li>
+                            <li>• Anurāga (sub-attachment) → Bhāva (ecstatic emotion)</li>
+                            <li>• Mahābhāva (supreme ecstasy)</li>
+                        </ul>
+                        <p><strong>Ultimate state:</strong> Yugala-bhajan (serving divine couple)</p>
+                    `
+                }
+            ];
+
+            const explanation = explanations[currentStage];
+            document.getElementById('stageExplanation').innerHTML = `
+                <div class="stage-title">${explanation.title}</div>
+                <div class="stage-content">${explanation.content}</div>
+            `;
+        }
+
+        function transformConsciousness() {
+            switch (currentStage) {
+                case 0:
+                    offensesCleared += Math.floor(Math.random() * 5) + 1;
+                    if (offensesCleared >= 100) {
+                        currentStage = 1;
+                        offensesCleared = 100;
+                    }
+                    break;
+                case 1:
+                    awarenessLevel += Math.floor(Math.random() * 3) + 1;
+                    if (awarenessLevel >= 100) {
+                        currentStage = 2;
+                        awarenessLevel = 100;
+                    }
+                    break;
+                case 2:
+                    loveAwakened += Math.floor(Math.random() * 2) + 1;
+                    if (loveAwakened >= 100) {
+                        loveAwakened = 100;
+                    }
+                    break;
+            }
+        }
+
+        function performChantingCycle() {
+            n++;
+            transformConsciousness();
+            updateDisplay();
+            
+            // Add visual effects during chanting
+            const mantraDisplay = document.getElementById('mantraDisplay');
+            mantraDisplay.classList.add('chanting');
+            
+            setTimeout(() => {
+                mantraDisplay.classList.remove('chanting');
+            }, 800);
+        }
+
+        function startChanting() {
+            if (!isChanting) {
+                isChanting = true;
+                document.getElementById('startBtn').textContent = 'Chanting...';
+                chantingInterval = setInterval(performChantingCycle, 3000);
+            }
+        }
+
+        function pauseChanting() {
+            isChanting = false;
+            clearInterval(chantingInterval);
+            document.getElementById('startBtn').textContent = 'Resume Chanting';
+        }
+
+        function resetChanting() {
+            pauseChanting();
+            n = 0;
+            currentStage = 0;
+            offensesCleared = 0;
+            awarenessLevel = 0;
+            loveAwakened = 0;
+            document.getElementById('startBtn').textContent = 'Begin Chanting';
+            updateDisplay();
+        }
+
+        // Event listeners
+        document.getElementById('startBtn').addEventListener('click', startChanting);
+        document.getElementById('pauseBtn').addEventListener('click', pauseChanting);
+        document.getElementById('resetBtn').addEventListener('click', resetChanting);
+
+        // Initialize everything
+        createParticles();
+        updateDisplay();
+    </script>
+</body>
+</html>
