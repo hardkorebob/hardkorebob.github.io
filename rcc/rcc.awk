@@ -1,26 +1,17 @@
 #!/bin/awk -f
 
 BEGIN {
-    # Code buffer
-    nlines = 0
     
-    # Filesystem tracking
+    nlines = 0 # Code buffer
     currentfunc = ""    
     currentdir = "."     
-    rootdir = "rcc_project"
-    
-    # Initialize project structure
-    system("mkdir -p " rootdir "/functions")
-    system("mkdir -p " rootdir "/includes") 
-    system("mkdir -p " rootdir "/globals")
-    currentdir = rootdir
-    
-    print "\n████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
-    print "λ Project root: " rootdir "\n"
+    rootdir = "."
+
+    print "\n\n████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
+    print "λ (-(-_-(-_(-_(-_-)_-)-_-)_-)_-)-) ❤ [¬º-°]¬ ✧ Σ = 0\n\n"
     
     # Main
     while (1) {
-        # Show current context
         if (currentfunc != "")
             printf "⊹╰(⌣ʟ⌣)╯⊹ [%s] Σ ", currentfunc
         else
@@ -31,11 +22,13 @@ BEGIN {
             
         if (choice ~ /^[0-9]+$/) {
             num = int(choice)
+
             if (num == 1) incr()
+			else if (num == "0") startnew() 
             else if (num == 2) decr()
             else if (num == 3) peq()
             else if (num == 4) meq()
-            else print "\nλ (-(-_-(-_(-_(-_-)_-)-_-)_-)_-)-)\n"
+            else print "\nλ (-(-_-(-_(-_(-_-)_-)-_-)_-)_-)-) [¬º-°]¬ ✧\n"
         }
 		else if (choice == "R") shcmd()
 		else if (choice == "s") fnc()
@@ -72,19 +65,41 @@ BEGIN {
 		else if (choice == "O") opencode()
         else if (choice == "V") viewcode()
         else if (choice == "S") savecode()
-        else if (choice == "A") break
 		else if (choice == "E") editlast()
         else if (choice == "L") listfuncs()
         else if (choice == "X") exitfunction()
         else if (choice == "T") projecttree()
 		else if (choice == "vf") viewfunc()
+		else if (choice == "A") goodbye()
+ 		else if (choice == ":)") yay()
         else print "\nλ ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
     }
 }
 
+function startnew(dir) {
+	dir = promptstr("\nλ [¬º-°]¬ Name ye creation: ")
+	if (dir == "") return
+	rootdir = dir
+    system("mkdir -p " rootdir "/functions")
+    system("mkdir -p " rootdir "/includes") 
+    system("mkdir -p " rootdir "/globals")
+    currentdir = rootdir
+	print "\nλ ❤ ♪♬\n"
+	system("troll")
+}
+
+function yay() {
+	print "\nλ ❤ λ\n"}
+
+function goodbye() {
+	print "\n✧ Adios? (-_-) [¬º-°]¬ λ\n"
+	exit
+}
+
 function printmenu() {
-    print "\no()xxxx[{::::::::::::::::::>\n"
-	print " 1 ++ 	2 -- 	3 += 	4 -="
+    print "\n o()xxxx[{::::::::::::::::::>\n"
+	print " 0 new	1 ++"
+	print " 2 -- 	3 += 	4 -="
 	print " c } 	--line 	_ cls"
 	print " s fnc	a fun	d vaf"
 	print " x dcl	v var	t ret"
@@ -95,7 +110,7 @@ function printmenu() {
 	print " u arr	i inc	I def"
 	print " p pro	m stst	j typ"
 	print " o enu	; strc 	? menu\n"
-    print " »»\n L  List funcs\n X  Exit func\n T  Tree\n vf View func\n"
+    print " »»\n T  Tree\n L  List()\n X  Exit()\n vf View()\n"
 	print " »\n B Build\n R Shell\n A Adios\n V View\n O Open\n S Save"
 
 	print "\n███████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
@@ -123,24 +138,23 @@ function editlast(newline, oldline) {
     print "\nλ Line updated ☜\n"
 }
 
-function viewcode(i) {
-    print "\n♪♬"
+function viewcode(i, tmp) {
+	tmp = rootdir"/program.c.tmp"
+	print "Current project: " rootdir
+    print "\n♪♬♪"
     for (i = 0; i < nlines; i++)
-        print lines[i]
+        print lines[i] > tmp
+	close(tmp)
+	system("cat " tmp "|cb ;rm " tmp)
     print "▲▲\n"
 }
 
 function savecode(filename, i) {
-    filename = promptstr("\nλ Output filename: ")
-    if (filename == "") {
-        print "\nλ Cannot be empty ✧\n"
-        return
-    }
+    filename = rootdir"/program.c"
     for (i = 0; i < nlines; i++)
         print lines[i] > filename
 	print "\n" >> filename
     close(filename)
-    system("cat " filename "|cb")
     print "\nλ Code saved: '" filename "'☜\n"
 }
 
@@ -149,27 +163,35 @@ function shcmd() {
 	system(cmd)
 }
 
-function buildit() {
+function buildit(name) {
 	name = promptstr("\nλ Building: ")
+    print "\nλ ████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
 	cmdc = "6c -FTVw "
 	cmdl = "6l -o "
-	system(cmdc name".c")
+	system(cmdc rootdir"/"name".c")
 	system(cmdl "6."name" "name".6")
-	print "\nλ ❤" 
+	print "\nλ ❤\n" 
+	print "\nλ ██████████████████████████████\n"
+
 }
 
-function opencode(fname) {
-	fname = promptstr("\nλ File: ")
-	if ( fname == "" ) { 
-		print "\nλ Enter file! ✧" 
+function opencode(fname, pname, file) {
+	pname = promptstr("\nλ Project: ")
+	if ( pname == "" ) { 
+		print "\nλ Nombre projecto? ✧" 
 		return
 	}
 	rmall()
-	while (( getline < fname ) > 0) {
+	printf "\nλ ++%s ☜\n\n", pname
+	rootdir = pname
+	fname = pname"/program.c"
+    print "\n♪♬♪"
+	file = system("cat " fname "|cb")
+    print "▲▲\n"
+	while (( getline < file ) > 0) {
 		lines[nlines++] = $0
 	}
 	close(fname)
-	printf "\nλ ++%s ☜\n\n", fname
 }
 
 function addline(line) {
@@ -181,7 +203,7 @@ function rmline(line) {
 	print "\nλ --line ☜\n"
 }
 
-function rmall() {
+function rmall(i,f) {
     for (i in lines)
 		delete lines[i]
 	nlines = 0
@@ -195,10 +217,9 @@ function promptstr(prompt, input) {
     return ""
 }
 
-# Filesystem functions
 function viewfunc(name) {
     if (currentfunc == "") 
-        name = promptstr("\nλ View function: \n")
+        name = promptstr("\nλ View function: ")
         if (name == "") return
     else 
         name = currentfunc
@@ -237,7 +258,7 @@ function listfuncs() {
 
 function projecttree() {
     print "\nλ Project structure:\n"
-    system("walk " rootdir " | sed 's|^" rootdir "/||' | sort")
+    system("walk " rootdir " | sort")
 }
 
 
@@ -385,13 +406,10 @@ function fov(type, iter, start, end) {
 
 function whl(cond) {
     cond = promptstr("\nλ While condition: ")
-    if (cond != "") {
+    if (cond != "") 
         addline(sprintf("while(%s)\n{", cond))
-        if (currentfunc != "") {
-            sendline(currentdir "/body.c", sprintf("while(%s)", cond))
-            sendline(currentdir "/body.c", "{")
-        }
-    }
+        if (currentfunc != "")
+            sendline(currentdir "/body.c", sprintf("while(%s)\n{", cond))   
 	print "\nλ ▽\n"
 }
 
@@ -405,17 +423,18 @@ function loop() {
 }
 
 function ifc(cond) {
-    cond = promptstr("\nλ If condition: ")
+    cond = promptstr("\nλ If {} condition: ")
+	if (cond == "") return
     if (cond != "") {
         addline(sprintf("if(%s) {", cond))
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("if(%s) {", cond))
     }
-	print "\nλ ▽\n"
+		print "\nλ ▽\n"
 }
 
 function iff(cond, stmt) {
-    cond = promptstr("\nλ If condition: ")
+    cond = promptstr("\nλ If ; condition: ")
     stmt = promptstr("\nλ Statement: ")
     if (cond != "" && stmt != "") {
         addline(sprintf("if(%s) %s;", cond, stmt))
@@ -674,8 +693,8 @@ function brkk() {
 }
 
 function closeblock() {
-    addline("}")
+    addline("}\n")
     if (currentfunc != "")
-        sendline(currentdir "/body.c", "}")
+        sendline(currentdir "/body.c", "}\n")
 	print "\nλ ▲\n"
 }
