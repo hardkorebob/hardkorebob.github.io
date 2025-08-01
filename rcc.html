@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<title>RCC - The Quirky C Code Generator</title>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+<center>
+<h1>████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒</h1>
+<h2>RCC: The Quirky C Code Generator</h2>
+<h3>⊹╰(⌣ʟ⌣)╯⊹ Building C Code Interactively!</h3>
+</center>
+
+<hr>
+
+<h2>What is RCC?</h2>
+<p>RCC (Really Cool C-generator?) is an interactive AWK script that helps you build C programs line by line through a friendly menu system. No more staring at blank files wondering where to start! It was originally made in rc shell hence the name.</p>
+
+<h2>Features</h2>
+<ul>
+<li>Build C code interactively with simple commands</li>
+<li>No need to remember exact syntax</li>
+<li>Friendly ASCII art and emoticons</li>
+<li>Save and load your creations</li>
+<li>Built in/for 9front</li>
+<li>Perfect for learning or quick prototyping</li>
+</ul>
+
+<h2>Quick Start</h2>
+<pre>
+$ awk -f rcc.awk
+████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+⊹╰(⌣ʟ⌣)╯⊹ Σ ?
+</pre>
+
+<p>Type <b>?</b> to see the menu!</p>
+
+<h2>Menu Commands</h2>
+<table border="1" cellpadding="5">
+<tr><th>Command</th><th>What it does</th></tr>
+<tr><td>i</td><td>Include headers (#include)</td></tr>
+<tr><td>a</td><td>Add a function</td></tr>
+<tr><td>v</td><td>Create variables</td></tr>
+<tr><td>f</td><td>For loop (ascending)</td></tr>
+<tr><td>F</td><td>For loop (descending)</td></tr>
+<tr><td>W</td><td>While loop</td></tr>
+<tr><td>q</td><td>If condition</td></tr>
+<tr><td>;</td><td>Create a struct</td></tr>
+<tr><td>c</td><td>Close block (})</td></tr>
+<tr><td>V</td><td>View your code</td></tr>
+<tr><td>S</td><td>Save to file</td></tr>
+<tr><td>B</td><td>Build with 6c/6l</td></tr>
+<tr><td>A</td><td>Adios (exit)</td></tr>
+</table>
+
+<h2>Example Session</h2>
+<pre>
+████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+⊹╰(⌣ʟ⌣)╯⊹ Σ i
+
+λ Header: u
+
+λ Header: libc
+
+λ Header: 
+⊹╰(⌣ʟ⌣)╯⊹ Σ v
+
+λ Variable type: int
+
+λ Variable name: i
+
+λ Initial value: 0
+
+λ Variable type: int
+
+λ Variable name: number
+
+λ Initial value: 0
+
+λ Variable type: int
+
+λ Variable name: total
+
+λ Initial value: 0
+
+λ Variable type: 
+
+λ Variable name: 
+
+⊹╰(⌣ʟ⌣)╯⊹ Σ a
+
+λ Function name: main
+
+λ Return type: void
+
+λ Arguments: void
+
+λ ▽
+
+⊹╰(⌣ʟ⌣)╯⊹ Σ W
+
+λ While condition: i < 5
+
+λ ▽
+
+⊹╰(⌣ʟ⌣)╯⊹ Σ s
+
+λ Function name: print
+
+λ Arguments: "Enter: %d: ", i+1
+
+λ Function name: scanf
+
+λ Arguments: "%d", &number
+
+λ Function name: 
+⊹╰(⌣ʟ⌣)╯⊹ Σ v
+
+λ Variable type: 
+
+λ Variable name: total
+
+λ Initial value: total + number
+
+λ Variable type: 
+
+λ Variable name: 
+⊹╰(⌣ʟ⌣)╯⊹ Σ 1
+
+λ Increment Variable: i
+⊹╰(⌣ʟ⌣)╯⊹ Σ c
+
+λ ▲
+
+⊹╰(⌣ʟ⌣)╯⊹ Σ s
+
+λ Function name: print
+
+λ Arguments: "total: %d\n", total
+
+λ Function name: print
+
+λ Arguments: "average: %d\n", total/5
+
+λ Function name: 
+⊹╰(⌣ʟ⌣)╯⊹ Σ c
+
+λ ▲
+
+⊹╰(⌣ʟ⌣)╯⊹ Σ S
+
+λ Output filename: w0.c
+#include <u.h>
+#include <libc.h>
+int i = 0;
+int number = 0;
+int total = 0;
+void
+main(void)
+{
+	while(i < 5) {
+		print("Enter: %d: ", i+1);
+		scanf("%d", &number);
+		total = total + number;
+		i++;
+	}
+	print("total: %d\n", total);
+	print("average: %d\n", total/5);
+}
+⊹╰(⌣ʟ⌣)╯⊹ Σ B
+
+λ Building: w0
+w0.c:11 function not declared: scanf
+w0.c:18 syntax error, last name: 5
+??none??: cannot open file: w0.6
+
+λ ❤
+</pre>
+
+<h2>Download</h2>
+<p><a href="rcc.awk">Download rcc.awk</a></p>
+
+<h2>Philosophy</h2>
+<p>Learning to code shouldn't feel like climbing a mountain. Sometimes you just want to build something without worrying about every semicolon and bracket. RCC lets you focus on the logic while it handles the syntax. I just wanted to share a quirky toy!</p>
+
+<hr>
+<center>
+<p>Made with 9front/acme ♪♬ by a quirky builder</p>
+<p>λ ❤</p>
+</center>
+
+</body>
+</html>
