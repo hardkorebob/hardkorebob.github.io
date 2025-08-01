@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Building a Filesystem-Based C Code Generator in AWK</title>
+</head>
+<body>
+<h1>Building a Filesystem-Based C Code Generator in AWK: Because Why Not?</h1>
+<h2>Or: How I Learned to Stop Worrying and Turn Code Into Directories</h2>
+
+<p>I built a C code generator in AWK that treats functions as directories. Yes, you read that right. Before you close this tab thinking I've lost my mind, hear me out – there's method to this madness, and it might just change how you think about code organization.</p>
+
+<h2>The Problem Nobody Talks About</h2>
+<p>We've all been there. You open your editor to write some C code, and that cursor just blinks at you mockingly...</p>
+
+<h2>Why AWK? (The Question Everyone Asks)</h2>
+<p>"Why not Python?" "Why not Rust?" "Why not literally anything else?"</p>
+<p>Because constraints breed creativity. AWK is:</p>
+<ul>
+<li>Already on your system (yes, even that ancient box in the corner)</li>
+<li>Dead simple (the entire thing is ~600 lines)</li>
+<li>Perfect for text manipulation (which is all code really is)</li>
+<li>Part of the Plan 9 philosophy I'm embracing</li>
+</ul>
+
+<h2>The Unix Philosophy on Steroids</h2>
+<p>Unix says "everything is a file." Plan 9 says "no, really, EVERYTHING is a file." So I thought: what if code structure was literally file structure?</p>
+
+<pre>
+rcc_project/
+└── functions/
+    └── process_data/
+        ├── signature.c
+        ├── vars.c
+        └── body.c
+</pre>
+
+<h2>The Interface: ASCII Art and Personality</h2>
+<pre>
+████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+⊹╰(⌣ʟ⌣)╯⊹ Σ ?
+
+o()xxxx[{::::::::::::::::::>
+</pre>
+
+<h2>The Technical Magic</h2>
+<pre>
+else if (choice == "v") var()
+else if (choice == "a") fun()  
+else if (choice == "f") fol()
+else if (choice == "W") whl()
+</pre>
+
+<pre>
+function sendline(filepath, line) {
+    print line >> filepath
+    close(filepath)
+}
+</pre>
+
+<h2>Real-World Usage Patterns</h2>
+<h3>The Scratchpad Pattern</h3>
+<p>You're debugging something and need a quick test...</p>
+
+<h3>The Learning Pattern</h3>
+<p>Someone asks "how do you write a linked list in C?"...</p>
+
+<h3>The Exploration Pattern</h3>
+<p>Inherited a codebase? Generate it through RCC...</p>
+
+<h2>The Philosophical Bits</h2>
+<h3>Simplicity as a Feature</h3>
+<p>In a world where development environments require gigabytes...</p>
+
+<h3>Transparency Over Magic</h3>
+<p>Modern tools hide complexity behind magic...</p>
+
+<h3>Composition Over Configuration</h3>
+<p>Instead of building every possible feature...</p>
+
+<h2>The Criticisms (And Why They're Features)</h2>
+<p>"But it doesn't have syntax highlighting!"...</p>
+
+<h2>What This Teaches Us</h2>
+<ol>
+<li><strong>Constraints are liberating</strong></li>
+<li><strong>Interfaces matter</strong></li>
+<li><strong>Simple beats clever</strong></li>
+<li><strong>Teaching is design</strong></li>
+</ol>
+
+<h2>The Broader Implications</h2>
+<p>What if we applied this thinking elsewhere?...</p>
+
+<h2>Try It Yourself</h2>
+<pre>
+#!/bin/awk -f
+BEGIN {
+    while (1) {
+        printf "> "
+        getline cmd
+        if (cmd == "func") {
+            printf "Name: "; getline name
+            system("mkdir -p funcs/" name)
+            print "int " name "() {" > "funcs/" name "/sig.c"
+        }
+        else if (cmd == "quit") break
+    }
+}
+</pre>
+
+<h2>The Future</h2>
+<p>RCC is intentionally unfinished...</p>
+
+<h2>Conclusion: Building Joy</h2>
+<p>In an industry obsessed with the new and complex...</p>
+
+<pre>
+λ ❤ Happy Hacking! ⊹╰(⌣ʟ⌣)╯⊹
+</pre>
+
+<p><em>P.S. – If you build something weird with this approach, I want to hear about it. The world needs more joyful tools.</em></p>
+</body>
+</html>
