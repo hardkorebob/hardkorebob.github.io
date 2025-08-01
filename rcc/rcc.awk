@@ -175,7 +175,7 @@ function buildit(name) {
 
 }
 
-function opencode(fname, pname, file) {
+function opencode(fname, pname) {
 	pname = promptstr("\nλ Project: ")
 	if ( pname == "" ) { 
 		print "\nλ Nombre projecto? ✧" 
@@ -188,7 +188,7 @@ function opencode(fname, pname, file) {
     print "\n♪♬♪"
 	file = system("cat " fname "|cb")
     print "▲▲\n"
-	while (( getline < file ) > 0) {
+	while (( getline < fname ) > 0) {
 		lines[nlines++] = $0
 	}
 	close(fname)
