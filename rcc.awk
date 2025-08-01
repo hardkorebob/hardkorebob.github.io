@@ -83,6 +83,8 @@ function printmenu() {
 function editlast(newline, oldline) {
     if (nlines == 0) {
         print "\nλ No lines to edit! ✧\n"
+        print "\nλ ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
+
         return
     }
     
@@ -128,11 +130,12 @@ function shcmd() {
 
 function buildit() {
 	name = promptstr("\nλ Building: ")
+    print "\nλ ████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
 	cmdc = "6c -FTVw "
 	cmdl = "6l -o "
 	system(cmdc name".c")
 	system(cmdl "6."name" "name".6")
-	print "\nλ ❤" 
+    print "n\λ ██████████████████████████████ ❤\n" 
 	 
 }
 
