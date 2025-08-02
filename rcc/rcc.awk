@@ -77,6 +77,9 @@ BEGIN {
     }
 }
 
+
+
+
 function startnew(dir) {
 	dir = promptstr("\nλ [¬º-°]¬ Name ye creation: ")
 	if (dir == "") return
@@ -90,7 +93,8 @@ function startnew(dir) {
 }
 
 function yay() {
-	print "\nλ ❤ ※\(^o^)/※ ❤ λ\n"}
+	print "\nλ ❤ ※\(^o^)/※ ❤ λ\n"
+}
 
 function goodbye() {
 	print "\n✧ Adios... [¬º-°]¬ (-_-) (•_•) ( •_•)>⌐■-■ (⌐■_■) λ\n"
@@ -370,7 +374,7 @@ function fun(name, rtype, args) {
         
         enterfunction(name)
         
-        print "\nλ " name " ▽"
+        print "\nλ " name " ▽ {\n"
 		openblk++
     }
 }
@@ -384,7 +388,7 @@ function fol(type, iter, start, end) {
     if (type != "" && iter != "" && start != "" && end != "") {
         addline(sprintf("for(%s %s = %s; %s < %s; %s++)\n{", type, iter, start, iter, end, iter))
 		openblk++
-		print "\nλ ▽\n"
+		print "\nλ ▽ {\n"
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("for(%s %s = %s; %s < %s; %s++)\n{", type, iter, start, iter, end, iter))
     }
@@ -397,7 +401,7 @@ function fov(type, iter, start, end) {
     end = promptstr("\nλ End value (inclusive): ")
     if (type != "" && iter != "" && start != "" && end != "") {
         addline(sprintf("for(%s %s = %s; %s >= %s; %s--)\n{", type, iter, start, iter, end, iter))
-		print "\nλ ▽\n"
+		print "\nλ ▽ {\n"
 		openblk++
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("for(%s %s = %s; %s >= %s; %s--)\n{", type, iter, start, iter, end, iter))
@@ -418,7 +422,7 @@ function whl(cond) {
     cond = promptstr("\nλ While condition: ")
     if (cond != "") 
         addline(sprintf("while(%s)\n{", cond))
-		print "\nλ ▽\n"
+		print "\nλ ▽ {\n"
 		openblk++
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("while(%s)\n{", cond))   
@@ -432,7 +436,7 @@ function loop() {
         sendline(currentdir "/body.c", "for(;;)")
         sendline(currentdir "/body.c", "{")
     }
-	print "\nλ Infinite Loop\n\nλ ▽\n"
+	print "\nλ Infinite Loop ▽ {\n"
 	openblk++
 }
 
@@ -442,7 +446,7 @@ function ifc(cond) {
 	if (cond == "") return
     if (cond != "") {
         addline(sprintf("if(%s) {", cond))
-		print "\nλ ▽\n"
+		print "\nλ ▽ {\n"
 		openblk++
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("if(%s) {", cond))
@@ -453,8 +457,7 @@ function ifc(cond) {
 
 function els() {
     addline("} else {")
-	openblk--
-	print "\nλ ▽\n"
+	print "\nλ ▲ ▽ {\n"
     if (currentfunc != "")
         sendline(currentdir "/body.c", "} else {")
 }
@@ -463,8 +466,7 @@ function elf(cond) {
     cond = promptstr("\nλ Elif condition: ")
     if (cond != "") {
         addline(sprintf("} else if(%s) {", cond))
-		openblk--
-		print "\nλ ▽\n"
+		print "\nλ ▲ ▽ {\n"
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("} else if(%s) {", cond))
     }
@@ -474,7 +476,7 @@ function swc(expr) {
     expr = promptstr("\nλ Switch expression: ")
     if (expr != "") {
         addline(sprintf("switch(%s) {", expr))
-		print "\nλ ▽\n"
+		print "\nλ ▽ {\n"
 		openblk++
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("switch(%s) {", expr))
