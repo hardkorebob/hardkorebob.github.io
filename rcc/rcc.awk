@@ -148,7 +148,7 @@ function viewcode(tmp, i) {
     for (i = 0; i < nlines; i++)
         print lines[i] > tmp
 	close(tmp)
-	system("cat " tmp "|cb; rm " tmp)
+	system("cat " tmp ">[2] /dev/null|cb; rm " tmp ">[2] /dev/null")
     print "▲▲\n"
 }
 
