@@ -93,7 +93,7 @@ function yay() {
 	print "\nλ ❤ ※\(^o^)/※ ❤ λ\n"}
 
 function goodbye() {
-	print "\n✧ Adios? (-_-) [¬º-°]¬ (•_•) ( •_•)>⌐■-■ (⌐■_■) λ\n"
+	print "\n✧ Adios... [¬º-°]¬ (-_-) (•_•) ( •_•)>⌐■-■ (⌐■_■) λ\n"
 	exit
 }
 
@@ -119,9 +119,7 @@ function printmenu() {
 
 function editlast(newline, oldline) {
     if (nlines == 0) {
-        print "\nλ No lines to edit! ✧\n"
-        print "\nλ ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
-
+        print "\nλ nil ✧\n"
         return
     }
     
@@ -141,9 +139,6 @@ function editlast(newline, oldline) {
 
 function viewcode(tmp, i) {
 	tmp = rootdir"/program.c.tmp"
-	#if (nlines == 0) 
-	#	print "\nλ 0 lines Einstein ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
-	#	return
 	print "Current project: " rootdir
     print "\n♪♬♪"
     for (i = 0; i < nlines; i++)
@@ -174,8 +169,8 @@ function buildit(name) {
 	cmdl = "6l -o "
 	system(cmdc rootdir"/"name".c")
 	system(cmdl "6."name" "name".6")
-	print "\nλ ❤\n" 
 	print "\nλ ██████████████████████████████\n"
+	yay() 
 
 }
 
@@ -245,12 +240,12 @@ function enterfunction(name) {
 
 function exitfunction() {
     if (currentfunc == "") {
-        print "\nλ Not in a function ✧\n"
+        print "\nλ nil No funciona ✧\n"
         return
     }
     currentfunc = ""
     currentdir = rootdir
-    print "\nλ ▲ Exited function\n"
+    print "\nλ [] Exited function ☜\n"
 }
 
 function listfuncs() {
@@ -365,9 +360,7 @@ function fun(name, rtype, args) {
         system("mkdir -p " funcdir)
         
         addline(sprintf("%s", rtype))
-        addline(sprintf("%s(%s)", name, args))
-        addline("{")
-        
+        addline(sprintf("%s(%s)\n{", name, args))
         sendline(funcdir "/signature.c", rtype)
         sendline(funcdir "/signature.c", sprintf("%s(%s)", name, args))
         sendline(funcdir "/signature.c", "{")
@@ -715,7 +708,7 @@ function brkk() {
 
 function closeblock(num, i, closeblk) {
 	if (openblk != 0) {
-		print "\nλ " openblk " blks open ❤"
+		print "\nλ " openblk " { open ✔"
 		num = promptstr("Close: ")
 		if (num == "") return
         if (num ~ /^[0-9]+$/) {
@@ -728,9 +721,9 @@ function closeblock(num, i, closeblk) {
         			sendline(currentdir "/body.c", "}\n")
 			}
 		}
-			print "\n\nλ " num " blks closed ☜\n"
+			print "\n\nλ " num " { closed ☜\n"
 	}
 	else
-		print "\nλ 0 blks genius ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
+		print "\nλ 0 { genius ✧\n"
 		return
 }
