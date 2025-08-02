@@ -2,17 +2,17 @@
 
 BEGIN {
     
-    nlines = 0 # Code buffer
+	nlines = 0 # Code buffer
 	openblk = 0
-    currentfunc = ""    
-    currentdir = "."     
-    rootdir = "."
+	currentfunc = ""    
+	currentdir = "."     
+	rootdir = "."
 
-    print "\n\n████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
-    print "λ (-(-_-(-_(-_(-_-)_-)-_-)_-)_-)-) ❤ [¬º-°]¬ ✧ Σ = 0\n\n"
+	print "\n\n████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
+	print "λ (-(-_-(-_(-_(-_-)_-)-_-)_-)_-)-) ❤ [¬º-°]¬ ✧ Σ = 0\n\n"
     
-    # Main
-    while (1) {
+	# Main
+	while (1) {
         if (currentfunc != "")
             printf "⊹╰(⌣ʟ⌣)╯⊹ [%s] Σ ", currentfunc
         else
