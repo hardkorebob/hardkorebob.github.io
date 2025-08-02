@@ -3,6 +3,7 @@
 BEGIN {
     
     nlines = 0 # Code buffer
+	openblk = 0
     currentfunc = ""    
     currentdir = "."     
     rootdir = "."
@@ -140,6 +141,9 @@ function editlast(newline, oldline) {
 
 function viewcode(i, tmp) {
 	tmp = rootdir"/program.c.tmp"
+	if (rootdir == "." || rootdir == "") 
+		print "\nλ 0 lines Einstein ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
+		return
 	print "Current project: " rootdir
     print "\n♪♬♪"
     for (i = 0; i < nlines; i++)
@@ -223,7 +227,6 @@ function viewfunc(name) {
         if (name == "") return
     else 
         name = currentfunc
-
     funcdir = rootdir "/functions/" name
     system("for(f in `{walk -f " funcdir "}){ echo '  '$f; sed 5q $f; echo }")
 
@@ -374,6 +377,7 @@ function fun(name, rtype, args) {
         enterfunction(name)
         
         print "\nλ " name " ▽"
+		openblk++
     }
 }
 
@@ -384,11 +388,12 @@ function fol(type, iter, start, end) {
     start = promptstr("\nλ Start value: ")
     end = promptstr("\nλ End value (exclusive): ")
     if (type != "" && iter != "" && start != "" && end != "") {
-        addline(sprintf("for(%s %s = %s; %s < %s; %s++) {", type, iter, start, iter, end, iter))
+        addline(sprintf("for(%s %s = %s; %s < %s; %s++)\n{", type, iter, start, iter, end, iter))
+		openblk++
+		print "\nλ ▽\n"
         if (currentfunc != "")
-            sendline(currentdir "/body.c", sprintf("for(%s %s = %s; %s < %s; %s++) {", type, iter, start, iter, end, iter))
+            sendline(currentdir "/body.c", sprintf("for(%s %s = %s; %s < %s; %s++)\n{", type, iter, start, iter, end, iter))
     }
-	print "\nλ ▽\n"
 }
 
 function fov(type, iter, start, end) {
@@ -397,40 +402,12 @@ function fov(type, iter, start, end) {
     start = promptstr("\nλ Start value: ")
     end = promptstr("\nλ End value (inclusive): ")
     if (type != "" && iter != "" && start != "" && end != "") {
-        addline(sprintf("for(%s %s = %s; %s >= %s; %s--) {", type, iter, start, iter, end, iter))
-        if (currentfunc != "")
-            sendline(currentdir "/body.c", sprintf("for(%s %s = %s; %s >= %s; %s--) {", type, iter, start, iter, end, iter))
-    }
-	print "\nλ ▽\n"
-}
-
-function whl(cond) {
-    cond = promptstr("\nλ While condition: ")
-    if (cond != "") 
-        addline(sprintf("while(%s)\n{", cond))
-        if (currentfunc != "")
-            sendline(currentdir "/body.c", sprintf("while(%s)\n{", cond))   
-	print "\nλ ▽\n"
-}
-
-function loop() {
-    addline("for(;;)\n{")
-    if (currentfunc != "") {
-        sendline(currentdir "/body.c", "for(;;)")
-        sendline(currentdir "/body.c", "{")
-    }
-	print "\nλ Infinite Loop\n\nλ ▽\n"
-}
-
-function ifc(cond) {
-    cond = promptstr("\nλ If {} condition: ")
-	if (cond == "") return
-    if (cond != "") {
-        addline(sprintf("if(%s) {", cond))
-        if (currentfunc != "")
-            sendline(currentdir "/body.c", sprintf("if(%s) {", cond))
-    }
+        addline(sprintf("for(%s %s = %s; %s >= %s; %s--)\n{", type, iter, start, iter, end, iter))
 		print "\nλ ▽\n"
+		openblk++
+        if (currentfunc != "")
+            sendline(currentdir "/body.c", sprintf("for(%s %s = %s; %s >= %s; %s--)\n{", type, iter, start, iter, end, iter))
+    }
 }
 
 function iff(cond, stmt) {
@@ -443,8 +420,47 @@ function iff(cond, stmt) {
     }
 }
 
+function whl(cond) {
+    cond = promptstr("\nλ While condition: ")
+    if (cond != "") 
+        addline(sprintf("while(%s)\n{", cond))
+		print "\nλ ▽\n"
+		openblk++
+        if (currentfunc != "")
+            sendline(currentdir "/body.c", sprintf("while(%s)\n{", cond))   
+
+
+}
+
+function loop() {
+    addline("for(;;)\n{")
+    if (currentfunc != "") {
+        sendline(currentdir "/body.c", "for(;;)")
+        sendline(currentdir "/body.c", "{")
+    }
+	print "\nλ Infinite Loop\n\nλ ▽\n"
+	openblk++
+}
+
+
+function ifc(cond) {
+    cond = promptstr("\nλ If {} condition: ")
+	if (cond == "") return
+    if (cond != "") {
+        addline(sprintf("if(%s) {", cond))
+		print "\nλ ▽\n"
+		openblk++
+        if (currentfunc != "")
+            sendline(currentdir "/body.c", sprintf("if(%s) {", cond))
+    }
+
+
+}
+
 function els() {
     addline("} else {")
+	openblk--
+	print "\nλ ▽\n"
     if (currentfunc != "")
         sendline(currentdir "/body.c", "} else {")
 }
@@ -453,6 +469,8 @@ function elf(cond) {
     cond = promptstr("\nλ Elif condition: ")
     if (cond != "") {
         addline(sprintf("} else if(%s) {", cond))
+		openblk--
+		print "\nλ ▽\n"
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("} else if(%s) {", cond))
     }
@@ -462,6 +480,8 @@ function swc(expr) {
     expr = promptstr("\nλ Switch expression: ")
     if (expr != "") {
         addline(sprintf("switch(%s) {", expr))
+		print "\nλ ▽\n"
+		openblk++
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("switch(%s) {", expr))
     }
@@ -692,9 +712,23 @@ function brkk() {
         sendline(currentdir "/body.c", "break;")
 }
 
-function closeblock() {
-    addline("}\n")
-    if (currentfunc != "")
-        sendline(currentdir "/body.c", "}\n")
-	print "\nλ ▲\n"
+function closeblock(num, i, closeblk) {
+	if (openblk == 0) 
+		print "\nλ 0 blks genius ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
+		return
+	if (openblk != 0) {
+		print "\nλ " openblk " blks open ❤\n"
+		num = promptstr("Close: ")
+		if (num == "") return
+        if (num ~ /^[0-9]+$/) {
+            closeblk = int(num)
+			for(i = 0; i < closeblk; i++) {
+				printf "} ▲ "
+				addline("}\n")
+    			if (currentfunc != "")
+        			sendline(currentdir "/body.c", "}\n")
+			}
+		}
+	}
+			print "\nλ " num " blks closed ☜"
 }
