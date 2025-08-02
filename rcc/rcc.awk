@@ -90,10 +90,10 @@ function startnew(dir) {
 }
 
 function yay() {
-	print "\nλ ❤ λ\n"}
+	print "\nλ ❤ ※\(^o^)/※ ❤ λ\n"}
 
 function goodbye() {
-	print "\n✧ Adios? (-_-) [¬º-°]¬ λ\n"
+	print "\n✧ Adios? (-_-) [¬º-°]¬ (•_•) ( •_•)>⌐■-■ (⌐■_■) λ\n"
 	exit
 }
 
@@ -185,10 +185,11 @@ function opencode(fname, pname) {
 		print "\nλ Nombre projecto? ✧" 
 		return
 	}
-	rmall()
-	printf "\nλ ++%s ☜\n\n", pname
+	openblk = 0
 	rootdir = pname
 	fname = pname"/program.c"
+	rmall()
+	printf "\nλ ++%s ☜\n\n", pname
     print "\n♪♬♪"
 	system("cat " fname "|cb")
     print "▲▲\n"
@@ -713,11 +714,8 @@ function brkk() {
 }
 
 function closeblock(num, i, closeblk) {
-	if (openblk == 0) 
-		print "\nλ 0 blks genius ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
-		return
 	if (openblk != 0) {
-		print "\nλ " openblk " blks open ❤\n"
+		print "\nλ " openblk " blks open ❤"
 		num = promptstr("Close: ")
 		if (num == "") return
         if (num ~ /^[0-9]+$/) {
@@ -725,10 +723,14 @@ function closeblock(num, i, closeblk) {
 			for(i = 0; i < closeblk; i++) {
 				printf "} ▲ "
 				addline("}\n")
+				openblk--
     			if (currentfunc != "")
         			sendline(currentdir "/body.c", "}\n")
 			}
 		}
+			print "\n\nλ " num " blks closed ☜\n"
 	}
-			print "\nλ " num " blks closed ☜"
+	else
+		print "\nλ 0 blks genius ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
+		return
 }
