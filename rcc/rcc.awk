@@ -139,17 +139,17 @@ function editlast(newline, oldline) {
     print "\nλ Line updated ☜\n"
 }
 
-function viewcode(i, tmp) {
+function viewcode(tmp, i) {
 	tmp = rootdir"/program.c.tmp"
-	if (rootdir == "." || rootdir == "") 
-		print "\nλ 0 lines Einstein ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
-		return
+	#if (nlines == 0) 
+	#	print "\nλ 0 lines Einstein ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
+	#	return
 	print "Current project: " rootdir
     print "\n♪♬♪"
     for (i = 0; i < nlines; i++)
         print lines[i] > tmp
 	close(tmp)
-	system("cat " tmp "|cb ;rm " tmp)
+	system("cat " tmp "|cb; rm " tmp)
     print "▲▲\n"
 }
 
@@ -190,7 +190,7 @@ function opencode(fname, pname) {
 	rootdir = pname
 	fname = pname"/program.c"
     print "\n♪♬♪"
-	file = system("cat " fname "|cb")
+	system("cat " fname "|cb")
     print "▲▲\n"
 	while (( getline < fname ) > 0) {
 		lines[nlines++] = $0
