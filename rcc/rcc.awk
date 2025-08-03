@@ -50,10 +50,9 @@ BEGIN {
 		else if (choice == "n") dft()
 		else if (choice == "t") ret()
 		else if (choice == "u") arr()
+		else if (choice == "l") stci()
 		else if (choice == ";") strc()
 		else if (choice == "p") pro()
-		else if (choice == "m") stst()
-		else if (choice == "j") typ()
 		else if (choice == "d") vaf()
 		else if (choice == "o") enu()
 		else if (choice == "G") brkk()
@@ -90,7 +89,6 @@ function startnew(dir) {
 	print "\nλ ❤ ♪♬\n"
 	system("troll")
 	rmall()
-	openblk = 0
 }
 
 function yay() {
@@ -104,20 +102,19 @@ function goodbye() {
 
 function printmenu() {
     print "\n o()xxxx[{::::::::::::::::::>\n"
-	print " 0 new	1 ++"
-	print " 2 -- 	3 += 	4 -="
-	print " c } 	--line 	_ cls"
-	print " s fnc	a fun	d vaf"
-	print " x dcl	v var	t ret"
-	print " f fol 	G brk"
+	print " i inc	I def	p pro"
+	print " ; strc	l stci	o enu"
+	print " s fnc	a fnd	d vaf"
+	print " x dcl	v var	u arr"
+	print " f for 	g inf	G brk"
 	print " W whl	q ifc	w iff"
-	print " e els	r elf	g inf"
+	print " e els	r elf	t ret"
 	print " y swc	h cas	n dft"
-	print " u arr	i inc	I def"
-	print " p pro	m stst	j typ"
-	print " o enu	; strc 	? menu\n"
+	print " 0 new	1 ++	2 -- "
+	print " 3 += 	4 -=	E edit"
+	print " c } 	- -line _ -*lines\n"
     print " »»\n T  Tree\n L  List()\n X  Exit()\n vf View()\n"
-	print " »\n B Build\n R Shell\n A Adios\n V View\n O Open\n S Save"
+	print " »\n B Build\n R Shell\n A Adios\n V View\n O Open\n S Save\n ? menu\n"
 
 	print "\n███████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
 }
@@ -149,16 +146,18 @@ function viewcode(tmp, i) {
     for (i = 0; i < nlines; i++)
         print lines[i] > tmp
 	close(tmp)
-	system("cat " tmp ">[2] /dev/null|cb; rm " tmp ">[2] /dev/null")
+	system("cat " tmp ">[2] /dev/null|cb")
     print "▲▲\n"
 }
 
-function savecode(filename, i) {
+function savecode(filename, i, tmp) {
     filename = rootdir"/program.c"
+	tmp = rootdir"/program.c.tmp"
     for (i = 0; i < nlines; i++)
-        print lines[i] > filename
-	print "\n" >> filename
-    close(filename)
+        print lines[i] > tmp
+	print "\n" >> tmp
+    close(tmp)
+	system("cat " tmp "|cb >" filename)
     print "\nλ Code saved: '" filename "'☜\n"
 }
 
@@ -169,13 +168,13 @@ function shcmd() {
 
 function buildit(name) {
 	name = "program"
-    print "\nλ ████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
+    print "\nλ ████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n\n"
 	cmdc = "6c -FTVw "
 	cmdl = "6l -o "
 	system(cmdc rootdir"/"name".c")
 	system(cmdl "6."name" "name".6")	
 	system("6.program")
-	print "\nλ ██████████████████████████████\n"
+	print "\n\nλ ██████████████████████████████\n"
 	yay()
 
 }
@@ -186,7 +185,6 @@ function opencode(fname, pname) {
 		print "\nλ Nombre projecto? ✧" 
 		return
 	}
-	openblk = 0
 	rootdir = pname
 	fname = pname"/program.c"
 	rmall()
@@ -214,6 +212,7 @@ function rmall(i,f) {
 		delete lines[i]
 	nlines = 0
 	print "\nλ --*lines ☜\n"
+	openblk = 0
 }
 
 function promptstr(prompt, input) {
@@ -291,6 +290,7 @@ function def(name, value) {
         }
 	}
 }
+
 function dcl(type, name) {
 	while (1) {
     	type = promptstr("\nλ Declare type: ")
@@ -333,29 +333,6 @@ function fnc(type, name) {
 	}
 }
 
-function var(name, value, type) {
-	while (1) {
-		type = promptstr("\nλ Variable type: ")
-    	name = promptstr("\nλ Variable name: ")
-		if (name == "") break
-    	value = promptstr("\nλ Initial value: ")
-    	
-        if (type == "") {
-			addline(sprintf("%s = %s;", name, value))
-            if (currentfunc != "")
-                sendline(currentdir "/vars.c", sprintf("%s = %s;", name, value))
-            else
-                sendline(rootdir "/globals/vars.c", sprintf("%s = %s;", name, value))
-        } else {
-        	addline(sprintf("%s %s = %s;", type, name, value))
-            if (currentfunc != "")
-                sendline(currentdir "/vars.c", sprintf("%s %s = %s;", type, name, value))
-            else
-                sendline(rootdir "/globals/vars.c", sprintf("%s %s = %s;", type, name, value))
-        }
-	}
-}
-
 function fun(name, rtype, args) {
     name = promptstr("\nλ Function name: ")
     rtype = promptstr("\nλ Return type: ")
@@ -384,8 +361,8 @@ function fun(name, rtype, args) {
 function fol(type, iter, start, end) {
     iter = promptstr("\nλ Iterator: ")
 	if (iter == "") return
-    start = promptstr("\nλ Test: ")
-	di = promptstr("\nλ Dec or Inc: ")
+    start = promptstr("\nλ Condition: ")
+	di = promptstr("\nλ End: ")
     if (iter != "" && start != "" && di != "") {
         addline(sprintf("for(%s; %s; %s)\n{", iter, start, di))
 		openblk++
@@ -394,7 +371,6 @@ function fol(type, iter, start, end) {
             sendline(currentdir "/body.c", sprintf("for(%s; %s; %s)\n{", iter, start, di))
     }
 }
-
 
 function iff(cond, stmt) {
     cond = promptstr("\nλ If ; condition: ")
@@ -428,7 +404,6 @@ function loop() {
 	openblk++
 }
 
-
 function ifc(cond) {
     cond = promptstr("\nλ If {} condition: ")
 	if (cond == "") return
@@ -439,8 +414,6 @@ function ifc(cond) {
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("if(%s) {", cond))
     }
-
-
 }
 
 function els() {
@@ -502,113 +475,72 @@ function ret(value) {
 function arr(type, name, vals) {
     type = promptstr("\nλ Array type: ")
     name = promptstr("\nλ Array name: ")
+	if (name == "") return
     vals = promptstr("\nλ Initial values: ")
-    if (type != "" && name != "" && vals != "") {
-        addline(sprintf("%s %s[] = {%s};", type, name, vals))
+    if (name != "" && vals != "") {
+        addline(sprintf("%s %s = {%s};", type, name, vals))
         if (currentfunc != "")
-            sendline(currentdir "/vars.c", sprintf("%s %s[] = {%s};", type, name, vals))
+            sendline(currentdir "/vars.c", sprintf("%s %s = {%s};", type, name, vals))
         else
-            sendline(rootdir "/globals/vars.c", sprintf("%s %s[] = {%s};", type, name, vals))
+            sendline(rootdir "/globals/vars.c", sprintf("%s %s = {%s};", type, name, vals))
     }
 }
 
-function strc(name, field, fname) {
-    name = promptstr("\nλ Struct name: ")
-    if (name == "") return
-    
-    addline("typedef struct\n{")
-    sendline(rootdir "/globals/structs.c", "typedef struct")
-    sendline(rootdir "/globals/structs.c", "{")
-    
+function stci(name, field, fname) {
+    type = promptstr("\nλ Init struct type: ")
+    name = promptstr("\nλ struct name: ")
+    if (name == "" || type == "") return
+    addline(sprintf("%s %s = {\n", type, name))
+    sendline(rootdir "/globals/structs.c", sprintf("%s %s = {", type, name))    
     while (1) {
-        field = promptstr("\nλ Field type: ")
-        if (field == "") break
-        
+        field = promptstr("\nλ Field name: ")       
+        fname = promptstr("\nλ Field value: ")
+        if (field == "" || fname == "") break
+        addline(sprintf("%s = %s,", field, fname))
+        sendline(rootdir "/globals/structs.c", sprintf("%s = %s,", field, fname))
+    }   
+    addline("};")
+    sendline(rootdir "/globals/structs.c", "};")
+}
+
+function strc(name, field, fname) {
+    name = promptstr("\nλ Make struct name: ")
+    if (name == "") return
+    addline("typedef struct\n{")
+    sendline(rootdir "/globals/structs.c", "typedef struct\n{")    
+    while (1) {
+        field = promptstr("\nλ Field type: ")       
         fname = promptstr("\nλ Field name: ")
-        if (fname == "") break
-        
-        addline(sprintf("    %s %s;", field, fname))
-        sendline(rootdir "/globals/structs.c", sprintf("    %s %s;", field, fname))
+        if (field == "" || fname == "") break
+        addline(sprintf("%s %s;", field, fname))
+        sendline(rootdir "/globals/structs.c", sprintf("%s %s;", field, fname))
     }
     
     addline(sprintf("} %s;", name))
     sendline(rootdir "/globals/structs.c", sprintf("} %s;", name))
 }
 
-function stst(type, name, field, value) {
-    type = promptstr("\nλ Static struct type: ")
-    name = promptstr("\nλ Variable name: ")
-    if (type == "" || name == "") return
-    
-    addline(sprintf("static %s %s = {", type, name))
-    if (currentfunc != "")
-        sendline(currentdir "/vars.c", sprintf("static %s %s = {", type, name))
-    else
-        sendline(rootdir "/globals/vars.c", sprintf("static %s %s = {", type, name))
-    
-    while (1) {
-        field = promptstr("\nλ Field name: ")
-        if (field == "") break
-        
-        value = promptstr("\nλ Field value: ")
-        if (value != "") {
-        	addline(sprintf(".%s = %s,", field, value))
+function var(name, value, type) {
+	while (1) {
+		type = promptstr("\nλ Variable type: ")
+    	name = promptstr("\nλ Variable name: ")
+		if (name == "") break
+    	value = promptstr("\nλ Initial value: ")
+    	
+        if (type == "") {
+			addline(sprintf("%s = %s;", name, value))
             if (currentfunc != "")
-                sendline(currentdir "/vars.c", sprintf(".%s = %s,", field, value))
+                sendline(currentdir "/vars.c", sprintf("%s = %s;", name, value))
             else
-                sendline(rootdir "/globals/vars.c", sprintf(".%s = %s,", field, value))
+                sendline(rootdir "/globals/vars.c", sprintf("%s = %s;", name, value))
         } else {
-        	addline(sprintf(".%s", field))
+        	addline(sprintf("%s %s = %s;", type, name, value))
             if (currentfunc != "")
-                sendline(currentdir "/vars.c", sprintf(".%s", field))
+                sendline(currentdir "/vars.c", sprintf("%s %s = %s;", type, name, value))
             else
-                sendline(rootdir "/globals/vars.c", sprintf(".%s", field))
+                sendline(rootdir "/globals/vars.c", sprintf("%s %s = %s;", type, name, value))
         }
-    }
-    
-    addline("};")
-    if (currentfunc != "")
-        sendline(currentdir "/vars.c", "};")
-    else
-        sendline(rootdir "/globals/vars.c", "};")
-}
-
-function typ(type, name, field, value) {
-    type = promptstr("\nλ Thing type: ")
-    name = promptstr("\nλ Variable name: ")
-    if (type == "" || name == "") return
-    
-    addline(sprintf("%s %s = {", type, name))
-    if (currentfunc != "")
-        sendline(currentdir "/vars.c", sprintf("%s %s = {", type, name))
-    else
-        sendline(rootdir "/globals/vars.c", sprintf("%s %s = {", type, name))
-    
-    while (1) {
-        field = promptstr("\nλ Field name: ")
-        if (field == "") break
-        
-        value = promptstr("\nλ Field value: ")
-        if (value != "") {
-        	addline(sprintf("%s = %s,", field, value))
-            if (currentfunc != "")
-                sendline(currentdir "/vars.c", sprintf("%s = %s,", field, value))
-            else
-                sendline(rootdir "/globals/vars.c", sprintf("%s = %s,", field, value))
-        } else {
-        	addline(sprintf("%s", field))
-            if (currentfunc != "")
-                sendline(currentdir "/vars.c", sprintf("%s", field))
-            else
-                sendline(rootdir "/globals/vars.c", sprintf("%s", field))
-        }
-    }
-    
-    addline("};")
-    if (currentfunc != "")
-        sendline(currentdir "/vars.c", "};")
-    else
-        sendline(rootdir "/globals/vars.c", "};")
+	}
 }
 
 function vaf(type, var, funcc, args) {
