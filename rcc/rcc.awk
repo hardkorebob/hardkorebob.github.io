@@ -93,7 +93,7 @@ function startnew(dir) {
 }
 
 function yay() {
-	print "\nλ ❤ ※\(^o^)/※ ❤ λ\n"
+	print "\nλ ❤ ※\(^o^)/※ ❤\n"
 }
 
 function goodbye() {
@@ -167,15 +167,15 @@ function shcmd() {
 }
 
 function buildit(name) {
-	name = promptstr("\nλ Building: ")
-    print "\nλ ████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
+	name = "program"
+    print "\nλ ████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
 	cmdc = "6c -FTVw "
 	cmdl = "6l -o "
 	system(cmdc rootdir"/"name".c")
-	system(cmdl "6."name" "name".6")
+	system(cmdl "6."name" "name".6")	
+	yay()
+	system("6.program")
 	print "\nλ ██████████████████████████████\n"
-	yay() 
-
 }
 
 function opencode(fname, pname) {
