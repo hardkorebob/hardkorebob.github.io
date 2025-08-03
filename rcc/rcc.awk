@@ -261,7 +261,7 @@ function listfuncs() {
 
 function projecttree() {
     print "\nλ Project structure:\n"
-    system("walk " rootdir " | sort")
+    system("walk " rootdir " | sort -r")
 }
 
 
