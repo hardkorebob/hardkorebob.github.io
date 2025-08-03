@@ -698,8 +698,8 @@ function brkk() {
 
 function closeblock(num, i, closeblk) {
 	if (openblk != 0) {
-		print "\nλ " openblk " { open ✔"
-		num = promptstr("Close: ")
+		print "\n☞ " openblk " { open ✔"
+		num = promptstr("\nλ Close: ")
 		if (num == "") return
         if (num ~ /^[0-9]+$/) {
             closeblk = int(num)
@@ -711,7 +711,7 @@ function closeblock(num, i, closeblk) {
         			sendline(currentdir "/body.c", "}\n")
 			}
 		}
-			print "\n\nλ " num " { closed ☜\n"
+			print num " closed ☜\n"
 	}
 	else
 		print "\nλ 0 { genius ✧\n"
