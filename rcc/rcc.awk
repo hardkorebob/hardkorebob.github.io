@@ -208,11 +208,15 @@ function rmline(line) {
 }
 
 function rmall(i,f) {
+	nlines = 0 
+	openblk = 0
+	currentfunc = ""    
+	currentdir = "."     
+	rootdir = "."
     for (i in lines)
 		delete lines[i]
-	nlines = 0
 	print "\nλ --*lines ☜\n"
-	openblk = 0
+	
 }
 
 function promptstr(prompt, input) {
