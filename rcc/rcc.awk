@@ -207,7 +207,7 @@ function rmline(line) {
 	print "\nλ --line ☜\n"
 }
 
-function rmall(i,f) {
+function rmall(i) {
 	nlines = 0 
 	openblk = 0
 	currentfunc = ""    
