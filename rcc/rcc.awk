@@ -39,7 +39,6 @@ BEGIN {
 		else if (choice == "v") var()
 		else if (choice == "a") fun()
 		else if (choice == "f") fol()
-		else if (choice == "F") fov()
 		else if (choice == "W") whl()
 		else if (choice == "c") closeblock()
 		else if (choice == "q") ifc()
@@ -110,7 +109,7 @@ function printmenu() {
 	print " c } 	--line 	_ cls"
 	print " s fnc	a fun	d vaf"
 	print " x dcl	v var	t ret"
-	print " f fol	F fov 	G brk"
+	print " f fol 	G brk"
 	print " W whl	q ifc	w iff"
 	print " e els	r elf	g inf"
 	print " y swc	h cas	n dft"
@@ -383,33 +382,19 @@ function fun(name, rtype, args) {
 }
 
 function fol(type, iter, start, end) {
-    type = promptstr("\nλ Iterator type: ")
-    iter = promptstr("\nλ Iterator name: ")
+    iter = promptstr("\nλ Iterator: ")
 	if (iter == "") return
-    start = promptstr("\nλ Start value: ")
-    end = promptstr("\nλ End value (exclusive): ")
-    if (type != "" && iter != "" && start != "" && end != "") {
-        addline(sprintf("for(%s %s = %s; %s < %s; %s++)\n{", type, iter, start, iter, end, iter))
+    start = promptstr("\nλ Test: ")
+	di = promptstr("\nλ Dec or Inc: ")
+    if (iter != "" && start != "" && di != "") {
+        addline(sprintf("for(%s; %s; %s)\n{", iter, start, di))
 		openblk++
 		print "\nλ ▽ {\n"
         if (currentfunc != "")
-            sendline(currentdir "/body.c", sprintf("for(%s %s = %s; %s < %s; %s++)\n{", type, iter, start, iter, end, iter))
+            sendline(currentdir "/body.c", sprintf("for(%s; %s; %s)\n{", iter, start, di))
     }
 }
 
-function fov(type, iter, start, end) {
-    type = promptstr("\nλ Iterator type: ")
-    iter = promptstr("\nλ Iterator name: ")
-    start = promptstr("\nλ Start value: ")
-    end = promptstr("\nλ End value (inclusive): ")
-    if (type != "" && iter != "" && start != "" && end != "") {
-        addline(sprintf("for(%s %s = %s; %s >= %s; %s--)\n{", type, iter, start, iter, end, iter))
-		print "\nλ ▽ {\n"
-		openblk++
-        if (currentfunc != "")
-            sendline(currentdir "/body.c", sprintf("for(%s %s = %s; %s >= %s; %s--)\n{", type, iter, start, iter, end, iter))
-    }
-}
 
 function iff(cond, stmt) {
     cond = promptstr("\nλ If ; condition: ")
