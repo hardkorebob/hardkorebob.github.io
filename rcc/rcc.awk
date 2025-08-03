@@ -173,9 +173,10 @@ function buildit(name) {
 	cmdl = "6l -o "
 	system(cmdc rootdir"/"name".c")
 	system(cmdl "6."name" "name".6")	
-	yay()
 	system("6.program")
 	print "\nλ ██████████████████████████████\n"
+	yay()
+
 }
 
 function opencode(fname, pname) {
