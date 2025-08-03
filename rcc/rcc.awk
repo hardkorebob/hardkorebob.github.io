@@ -90,6 +90,8 @@ function startnew(dir) {
     currentdir = rootdir
 	print "\nλ ❤ ♪♬\n"
 	system("troll")
+	rmall()
+	openblk = 0
 }
 
 function yay() {
