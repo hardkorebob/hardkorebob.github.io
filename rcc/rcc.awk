@@ -69,6 +69,7 @@ BEGIN {
 		else if (choice == "X") exitfunction()
 		else if (choice == "T") projecttree()
 		else if (choice == "vf") viewfunc()
+		else if (choice == "ma") marg()
 		else if (choice == "A") goodbye()
  		else if (choice == ":)") yay()
         else print "\nλ ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
@@ -76,20 +77,6 @@ BEGIN {
 }
 
 
-
-
-function startnew(dir) {
-	dir = promptstr("\nλ [¬º-°]¬ Name ye creation: ")
-	if (dir == "") return
-	rootdir = dir
-    system("mkdir -p " rootdir "/functions")
-    system("mkdir -p " rootdir "/includes") 
-    system("mkdir -p " rootdir "/globals")
-    currentdir = rootdir
-	print "\nλ ❤ ♪♬\n"
-	system("troll")
-	rmall()
-}
 
 function yay() {
 	print "\nλ ❤ ※\(^o^)/※ ❤\n"
@@ -113,6 +100,7 @@ function printmenu() {
 	print " 0 new	1 ++	2 -- "
 	print " 3 += 	4 -=	E edit"
 	print " c } 	- -line _ -*lines\n"
+	print " ma marg"
     print " »»\n T  Tree\n L  List()\n X  Exit()\n vf View()\n"
 	print " »\n B Build\n R Shell\n A Adios\n V View\n O Open\n S Save\n ? menu\n"
 
@@ -137,6 +125,35 @@ function editlast(newline, oldline) {
     
     lines[nlines-1] = newline
     print "\nλ Line updated ☜\n"
+}
+
+function startnew(dir) {
+	dir = promptstr("\nλ [¬º-°]¬ Name ye creation: ")
+	if (dir == "") return
+	rmall()
+	rootdir = dir
+    system("mkdir -p " rootdir "/functions")
+    system("mkdir -p " rootdir "/includes") 
+    system("mkdir -p " rootdir "/globals")
+    currentdir = rootdir
+	print "\nλ ❤ ♪♬\n"
+	system("troll")
+}
+
+function opencode(fname, pname) {
+	pname = promptstr("\nλ Project: ")
+	if (pname == "")return
+	rmall()
+	rootdir = pname
+	fname = pname"/program.c"
+	printf "\nλ ++%s ☜\n\n", pname
+    print "\n♪♬♪"
+	system("cat " fname "|cb")
+    print "▲▲\n"
+	while (( getline < fname ) > 0) {
+		lines[nlines++] = $0
+	}
+	close(fname)
 }
 
 function viewcode(tmp, i) {
@@ -177,25 +194,6 @@ function buildit(name) {
 	print "\n\nλ ██████████████████████████████\n"
 	yay()
 
-}
-
-function opencode(fname, pname) {
-	pname = promptstr("\nλ Project: ")
-	if ( pname == "" ) { 
-		print "\nλ Nombre projecto? ✧" 
-		return
-	}
-	rootdir = pname
-	fname = pname"/program.c"
-	rmall()
-	printf "\nλ ++%s ☜\n\n", pname
-    print "\n♪♬♪"
-	system("cat " fname "|cb")
-    print "▲▲\n"
-	while (( getline < fname ) > 0) {
-		lines[nlines++] = $0
-	}
-	close(fname)
 }
 
 function addline(line) {
@@ -488,6 +486,19 @@ function arr(type, name, vals) {
         else
             sendline(rootdir "/globals/vars.c", sprintf("%s %s = {%s};", type, name, vals))
     }
+}
+
+function marg(opt, stm, d) {
+	addline("ARGBEGIN{")
+	while (1) {	
+		opt = promptstr("\nλ Option: ")
+		if (opt == "") break
+		stm = promptstr("\nλ Statement: ")
+		addline(sprintf("case %s:\n %s;\n break;\n", opt, stm))
+	}
+	d = promptstr("\nλ Default: ")
+	emsg = promptstr("\nλ Exit msg: ")
+	addline(sprintf("default:\n %s;\n exits(%s);\n }ARGEND;", d, emsg))
 }
 
 function stci(name, field, fname) {
