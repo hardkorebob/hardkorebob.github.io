@@ -66,7 +66,7 @@ BEGIN {
 		else if (choice == "S") savecode()
 		else if (choice == "E") editlast()
 		else if (choice == "L") listfuncs()
-		else if (choice == "X") exitfunction()
+		else if (choice == "z") exitfunction()
 		else if (choice == "T") projecttree()
 		else if (choice == "vf") viewfunc()
 		else if (choice == "ma") marg()
