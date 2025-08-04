@@ -490,15 +490,21 @@ function arr(type, name, vals) {
 
 function marg(opt, stm, d) {
 	addline("ARGBEGIN{")
+	if (currentfunc != "")
+		sendline(currentdir "/body.c", "ARGBEGIN{")
+	else
+		return
 	while (1) {	
 		opt = promptstr("\nλ Option: ")
 		if (opt == "") break
 		stm = promptstr("\nλ Statement: ")
 		addline(sprintf("case %s:\n %s;\n break;\n", opt, stm))
+		sendline(currentdir "/body.c", sprintf("case %s:\n %s;\n break;\n", opt, stm))
 	}
 	d = promptstr("\nλ Default: ")
 	emsg = promptstr("\nλ Exit msg: ")
 	addline(sprintf("default:\n %s;\n exits(%s);\n }ARGEND;", d, emsg))
+	sendline(currentdir "/body.c", "}ARGEND;")
 }
 
 function stci(name, field, fname) {
