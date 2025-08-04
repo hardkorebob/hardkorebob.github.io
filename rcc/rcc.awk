@@ -39,10 +39,9 @@ BEGIN {
 		else if (choice == "v") var()
 		else if (choice == "a") fun()
 		else if (choice == "f") fol()
-		else if (choice == "W") whl()
+		else if (choice == "w") whl()
 		else if (choice == "c") closeblock()
 		else if (choice == "q") ifc()
-		else if (choice == "w") iff()
 		else if (choice == "e") els()
 		else if (choice == "r") elf()
 		else if (choice == "y") swc()
@@ -65,11 +64,9 @@ BEGIN {
 		else if (choice == "V") viewcode()
 		else if (choice == "S") savecode()
 		else if (choice == "E") editlast()
-		else if (choice == "L") listfuncs()
 		else if (choice == "z") exitfunction()
 		else if (choice == "T") projecttree()
-		else if (choice == "vf") viewfunc()
-		else if (choice == "ma") marg()
+		else if (choice == "M") marg()
 		else if (choice == "A") goodbye()
  		else if (choice == ":)") yay()
         else print "\nλ ┌П┐ »»»»»»─=≡ΣO)) [¬º-°]¬ ✧\n"
@@ -90,20 +87,18 @@ function goodbye() {
 function printmenu() {
     print "\n o()xxxx[{::::::::::::::::::>\n"
 	print " i inc	I def	p pro"
-	print " ; strc	l stci	o enu"
+	print " ; stc	l sti	o enu"
 	print " s fnc	a fnd	d vaf"
 	print " x dcl	v var	u arr"
-	print " f for 	g inf	k brk"
-	print " W whl	q ifc	w iff"
-	print " e els	r elf	t ret"
+	print " f for 	g ilp	k brk"
+	print " w whl	q ifc	e els"
+	print " r elf	t ret	z clf"
 	print " y swc	h cas	n dft"
-	print " 0 new	1 ++	2 -- "
-	print " 3 += 	4 -=	c }"
-	print " E edt	- -line	_ -*lines"
-	print " ma marg\n ? menu\n"
-    print " »»\n T  Tree\n L  List()\n X  Exit()\n vf View()\n"
-	print " »\n B Build\n R Shell\n A Adios\n V View\n O Open\n S Save\n"
-
+	print " c }	0 new	1 ++"
+	print " 2 --	3 += 	4 -="
+	print " - ln	_ *ln	E edt"
+	print " M mca	? menu	T Tree\n"
+	print " »\n B Build\n R Shell\n A Adios\n V View\n O Open\n S Save"
 	print "\n███████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
 }
 
@@ -220,17 +215,6 @@ function promptstr(prompt, input) {
     return ""
 }
 
-function viewfunc(name) {
-    if (currentfunc == "") 
-        name = promptstr("\nλ View function: ")
-        if (name == "") return
-    else 
-        name = currentfunc
-    funcdir = rootdir "/functions/" name
-    system("for(f in `{walk -f " funcdir "}){ echo '  '$f; sed 5q $f; echo }")
-
-}
-
 function sendline(filepath, line) {
     print line >> filepath
     close(filepath)
@@ -250,13 +234,6 @@ function exitfunction() {
     currentdir = rootdir
     print "\nλ Function End ☜\n"
 }
-
-function listfuncs() {
-    print "\nλ Functions:\n"
-    system("ls " rootdir "/functions")
-    print ""
-}
-
 
 function projecttree() {
     print "\nλ Project structure:\n"
@@ -371,16 +348,6 @@ function fol(type, iter, start, end) {
     }
 }
 
-function iff(cond, stmt) {
-    cond = promptstr("\nλ If ; condition: ")
-    stmt = promptstr("\nλ Statement: ")
-    if (cond != "" && stmt != "") {
-        addline(sprintf("if(%s) %s;", cond, stmt))
-        if (currentfunc != "")
-            sendline(currentdir "/body.c", sprintf("if(%s) %s;", cond, stmt))
-    }
-}
-
 function whl(cond) {
     cond = promptstr("\nλ While condition: ")
     if (cond != "") 
@@ -389,8 +356,6 @@ function whl(cond) {
 		openblk++
         if (currentfunc != "")
             sendline(currentdir "/body.c", sprintf("while(%s)\n{", cond))   
-
-
 }
 
 function loop() {
@@ -404,7 +369,7 @@ function loop() {
 }
 
 function ifc(cond) {
-    cond = promptstr("\nλ If {} condition: ")
+    cond = promptstr("\nλ If condition: ")
 	if (cond == "") return
     if (cond != "") {
         addline(sprintf("if(%s) {", cond))
