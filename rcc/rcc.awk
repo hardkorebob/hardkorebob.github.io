@@ -55,7 +55,7 @@ BEGIN {
 		else if (choice == "p") pro()
 		else if (choice == "d") vaf()
 		else if (choice == "o") enu()
-		else if (choice == "G") brkk()
+		else if (choice == "k") brkk()
 		else if (choice == "g") loop()
 		else if (choice == "-") rmline()
 		else if (choice == "_") rmall()
@@ -93,16 +93,16 @@ function printmenu() {
 	print " ; strc	l stci	o enu"
 	print " s fnc	a fnd	d vaf"
 	print " x dcl	v var	u arr"
-	print " f for 	g inf	G brk"
+	print " f for 	g inf	k brk"
 	print " W whl	q ifc	w iff"
 	print " e els	r elf	t ret"
 	print " y swc	h cas	n dft"
 	print " 0 new	1 ++	2 -- "
-	print " 3 += 	4 -=	E edit"
-	print " c } 	- -line _ -*lines\n"
-	print " ma marg"
+	print " 3 += 	4 -=	c }"
+	print " E edt	- -line	_ -*lines"
+	print " ma marg\n ? menu\n"
     print " »»\n T  Tree\n L  List()\n X  Exit()\n vf View()\n"
-	print " »\n B Build\n R Shell\n A Adios\n V View\n O Open\n S Save\n ? menu\n"
+	print " »\n B Build\n R Shell\n A Adios\n V View\n O Open\n S Save\n"
 
 	print "\n███████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n"
 }
@@ -111,18 +111,14 @@ function editlast(newline, oldline) {
     if (nlines == 0) {
         print "\nλ nil ✧\n"
         return
-    }
-    
+    }  
     oldline = lines[nlines-1]
-    print "\nλ Current line: " oldline
-    
-    newline = promptstr("\nλ Edit to: ")
-    
+    print "\nλ Current line: " oldline  
+    newline = promptstr("\nλ Edit to: ")   
     if (newline == "") {
         print "\nλ Edit cancelled ✧\n"
         return
-    }
-    
+    }   
     lines[nlines-1] = newline
     print "\nλ Line updated ☜\n"
 }
@@ -585,14 +581,16 @@ function vaf(type, var, funcc, args) {
 }
 
 function enu(name, value) {
-    addline("enum {")
-    sendline(rootdir "/globals/enums.c", "enum {")
+    tag = promptstr("\nλ Make enum name: ")
+    if (tag == "") return
+    addline("typedef enum\n{")
+    sendline(rootdir "/globals/enums.c", "typedef enum\n{")
     
     while (1) {
-        name = promptstr("\nλ Enumerator name: ")
+        name = promptstr("\nλ Field name: ")
         if (name == "") break
         
-        value = promptstr("\nλ Enumerator value: ")
+        value = promptstr("\nλ Value: ")
         if (value != "") {
             addline(sprintf("%s = %s,", name, value))
             sendline(rootdir "/globals/enums.c", sprintf("%s = %s,", name, value))
@@ -602,8 +600,8 @@ function enu(name, value) {
         }
     }
     
-    addline("};")
-    sendline(rootdir "/globals/enums.c", "};")
+    addline(sprintf("} %s;", tag))
+    sendline(rootdir "/globals/enums.c", sprintf("} %s;", tag))
 }
 
 function peq(var, val) {
