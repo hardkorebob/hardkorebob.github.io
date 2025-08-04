@@ -90,7 +90,7 @@ function printmenu() {
 	print " ; stc	l sti	o enu"
 	print " s fnc	a fnd	d vaf"
 	print " x dcl	v var	u arr"
-	print " f for 	g ilp	k brk"
+	print " f for	g ilp	k brk"
 	print " w whl	q ifc	e els"
 	print " r elf	t ret	z clf"
 	print " y swc	h cas	n dft"
