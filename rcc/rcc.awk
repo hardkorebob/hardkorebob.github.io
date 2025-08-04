@@ -158,7 +158,7 @@ function opencode(fname, pname) {
 
 function viewcode(tmp, i) {
 	tmp = rootdir"/program.c.tmp"
-	print "Current project: " rootdir
+	print "\nλ Current project: " rootdir
     print "\n♪♬♪"
     for (i = 0; i < nlines; i++)
         print lines[i] > tmp
@@ -247,16 +247,16 @@ function enterfunction(name) {
 
 function exitfunction() {
     if (currentfunc == "") {
-        print "\nλ nil No funciona ✧\n"
+        print "\nλ nil funciona ✧\n"
         return
     }
     currentfunc = ""
     currentdir = rootdir
-    print "\nλ [] Exited function ☜\n"
+    print "\nλ Function End ☜\n"
 }
 
 function listfuncs() {
-    print "\nλ Functions in project:\n"
+    print "\nλ Functions:\n"
     system("ls " rootdir "/functions")
     print ""
 }
@@ -309,8 +309,8 @@ function pro(type, name) {
 	while (1) {
     	type = promptstr("\nλ Proto type: ")
 		if (type == "") break
-    	name = promptstr("\nλ Func name: ")
-    	args = promptstr("\nλ Args name: ")
+    	name = promptstr("\nλ Function name: ")
+    	args = promptstr("\nλ Arguments name: ")
     	if (type != "" && name != "" && args !="") {
         	addline(sprintf("%s %s(%s);", type, name, args))
             sendline(rootdir "/prototypes.h", sprintf("%s %s(%s);", type, name, args))
@@ -318,9 +318,9 @@ function pro(type, name) {
 	}
 }
 
-function fnc(type, name) {
+function fnc(type, name) {	
 	while (1) {
-    	name = promptstr("\nλ Function name: ")
+    	name = promptstr("\nλ Function run: ")
 		if (name == "") break
     	args = promptstr("\nλ Arguments: ")
     	if (args == "") {
@@ -336,7 +336,8 @@ function fnc(type, name) {
 }
 
 function fun(name, rtype, args) {
-    name = promptstr("\nλ Function name: ")
+	print "\nλ Function Start ☜"
+    name = promptstr("\nλ Name: ")
     rtype = promptstr("\nλ Return type: ")
     args = promptstr("\nλ Arguments: ")
     
