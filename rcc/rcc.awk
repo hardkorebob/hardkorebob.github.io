@@ -295,11 +295,19 @@ function fnc(type, name) {
 }
 
 function fun(name, rtype, args) {
+	if (currentfunc != "") {
+		print "\nλ Exit function first! ✧"
+		return
+	}
 	print "\nλ Function Start ☜"
     name = promptstr("\nλ Name: ")
     rtype = promptstr("\nλ Return type: ")
     args = promptstr("\nλ Arguments: ")
-	addline(sprintf("%s %s(%s);", rtype, name, args))
+	if (name == "main") {
+		addline("")
+	} else {
+		addline(sprintf("%s %s(%s);", rtype, name, args))
+	}
 
     if (name != "" && rtype != "") {
         funcdir = rootdir "/functions/" name
@@ -317,7 +325,7 @@ function fun(name, rtype, args) {
     }
 }
 
-function fol(type, iter, start, end) {
+function fol(type, iter, start, di) {
     iter = promptstr("\nλ Iterator: ")
 	if (iter == "") return
     start = promptstr("\nλ Condition: ")
