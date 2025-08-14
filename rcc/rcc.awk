@@ -318,12 +318,8 @@ function fun(name, rtype, args) {
         funcdir = rootdir "/functions/" name
         system("mkdir -p " funcdir)
         
-        addline(sprintf("%s", rtype))
-        addline(sprintf("%s(%s)\n{", name, args))
-        sendline(funcdir "/signature.c", rtype)
-        sendline(funcdir "/signature.c", sprintf("%s(%s)", name, args))
-        sendline(funcdir "/signature.c", "{")
-        
+        addline(sprintf("%s\n%s(%s)\n{", rtype, name, args))
+        sendline(funcdir "/signature.c", sprintf("%s\n%s(%s)\n{", rtype, name, args))        
         system("touch " funcdir "/vars.c")
         system("touch " funcdir "/body.c")
         
@@ -547,9 +543,14 @@ function vaf(type, var, funcc, args) {
 
 function enu(name, value) {
     tag = promptstr("\nλ Make enum name: ")
-    if (tag == "") return
-    addline("typedef enum\n{")
-    sendline(rootdir "/globals/enums.c", "typedef enum\n{")
+    if (tag == "") {
+		addline("enum\n{")
+		sendline(rootdir "/globals/enums.c", "enum\n{")
+    }
+	else {
+		addline("typedef enum\n{")
+    	sendline(rootdir "/globals/enums.c", "typedef enum\n{")
+	}
     
     while (1) {
         name = promptstr("\nλ Field name: ")
