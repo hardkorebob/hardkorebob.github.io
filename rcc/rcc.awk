@@ -51,7 +51,6 @@ BEGIN {
 		else if (choice == "u") arr()
 		else if (choice == "l") stci()
 		else if (choice == ";") strc()
-		else if (choice == "p") pro()
 		else if (choice == "d") vaf()
 		else if (choice == "o") enu()
 		else if (choice == "k") brkk()
@@ -86,7 +85,7 @@ function goodbye() {
 
 function printmenu() {
     print "\n o()xxxx[{::::::::::::::::::>\n"
-	print " i inc	I def	p pro"
+	print " i inc	I def"
 	print " ; stc	l sti	o enu"
 	print " s fnc	a fnd	d vaf"
 	print " x dcl	v var	u arr"
@@ -278,19 +277,6 @@ function dcl(type, name) {
 	}
 }
 
-function pro(type, name) {
-	while (1) {
-    	type = promptstr("\nλ Proto type: ")
-		if (type == "") break
-    	name = promptstr("\nλ Function name: ")
-    	args = promptstr("\nλ Arguments name: ")
-    	if (type != "" && name != "" && args !="") {
-        	addline(sprintf("%s %s(%s);", type, name, args))
-            sendline(rootdir "/prototypes.h", sprintf("%s %s(%s);", type, name, args))
-        }
-	}
-}
-
 function fnc(type, name) {	
 	while (1) {
     	name = promptstr("\nλ Function run: ")
@@ -313,7 +299,8 @@ function fun(name, rtype, args) {
     name = promptstr("\nλ Name: ")
     rtype = promptstr("\nλ Return type: ")
     args = promptstr("\nλ Arguments: ")
-    
+	addline(sprintf("%s %s(%s);", rtype, name, args))
+
     if (name != "" && rtype != "") {
         funcdir = rootdir "/functions/" name
         system("mkdir -p " funcdir)
@@ -485,8 +472,10 @@ function stci(name, field, fname) {
 function strc(name, field, fname) {
     name = promptstr("\nλ Make struct name: ")
     if (name == "") return
-    addline("typedef struct\n{")
-    sendline(rootdir "/globals/structs.c", "typedef struct\n{")    
+	addline(sprintf("typedef struct %s %s;", name, name))
+    addline(sprintf("struct %s\n{", name))
+    sendline(rootdir "/globals/structs.c", sprintf("typedef struct %s %s;", name, name))
+	sendline(rootdir "/globals/structs.c", sprintf("struct %s\n{", name))   
     while (1) {
         field = promptstr("\nλ Field type: ")       
         fname = promptstr("\nλ Field name: ")
@@ -494,9 +483,8 @@ function strc(name, field, fname) {
         addline(sprintf("%s %s;", field, fname))
         sendline(rootdir "/globals/structs.c", sprintf("%s %s;", field, fname))
     }
-    
-    addline(sprintf("} %s;", name))
-    sendline(rootdir "/globals/structs.c", sprintf("} %s;", name))
+    addline("};")
+    sendline(rootdir "/globals/structs.c", "};")
 }
 
 function var(name, value, type) {
