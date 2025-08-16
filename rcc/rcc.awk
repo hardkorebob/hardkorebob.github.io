@@ -123,7 +123,6 @@ function startnew(dir) {
 	rmall()
 	rootdir = dir
     system("mkdir -p " rootdir "/functions")
-    system("mkdir -p " rootdir "/includes") 
     system("mkdir -p " rootdir "/globals")
     currentdir = rootdir
 	print "\nλ ❤ ♪♬\n"
@@ -219,19 +218,14 @@ function sendline(filepath, line) {
     close(filepath)
 }
 
-function enterfunction(name) {
-    currentfunc = name
-    currentdir = rootdir "/functions/" name
-}
-
 function exitfunction() {
     if (currentfunc == "") {
         print "\nλ nil funciona ✧\n"
         return
     }
-    currentfunc = ""
     currentdir = rootdir
-    print "\nλ Function End ☜\n"
+    print "\nλ [" currentfunc "] Exit ☜\n"
+    currentfunc = ""
 }
 
 function projecttree() {
@@ -272,8 +266,12 @@ function dcl(type, name) {
     	name = promptstr("\nλ Declare name: ")
     	if (type != "" && name != "") {
         	addline(sprintf("%s %s;", type, name))
-            sendline(rootdir "/globals/declarations.c", sprintf("%s %s;", type, name))
-        }
+ 			if (currentfunc != "")
+            	sendline(currentdir "/body.c", sprintf("%s %s;", type, name))
+        	else 
+				sendline(rootdir "/globals/declarations.c", sprintf("%s %s;", type, name))
+
+            }
 	}
 }
 
@@ -296,7 +294,7 @@ function fnc(type, name) {
 
 function fun(name, rtype, args) {
 	if (currentfunc != "") {
-		print "\nλ Exit function first! ✧"
+		print "\nλ z Exit [" currentfunc "] ✧\n"
 		return
 	}
 	print "\nλ Function Start ☜"
@@ -307,6 +305,7 @@ function fun(name, rtype, args) {
 		addline("")
 	} else {
 		addline(sprintf("%s %s(%s);", rtype, name, args))
+		sendline(rootdir "/prototypes.h", sprintf("%s %s(%s);", rtype, name, args))
 	}
 
     if (name != "" && rtype != "") {
@@ -318,9 +317,10 @@ function fun(name, rtype, args) {
         system("touch " funcdir "/vars.c")
         system("touch " funcdir "/body.c")
         
-        enterfunction(name)
+		currentfunc = name
+		currentdir = rootdir "/functions/" name
         
-        print "\nλ " name " ▽ {\n"
+        print "\nλ Enter" name " ▽ {\n"
 		openblk++
     }
 }
@@ -331,11 +331,11 @@ function fol(type, iter, start, di) {
     start = promptstr("\nλ Condition: ")
 	di = promptstr("\nλ End: ")
     if (iter != "" && start != "" && di != "") {
-        addline(sprintf("for(%s; %s; %s)\n{", iter, start, di))
+        addline(sprintf("for(%s; %s; %s){", iter, start, di))
 		openblk++
 		print "\nλ ▽ {\n"
         if (currentfunc != "")
-            sendline(currentdir "/body.c", sprintf("for(%s; %s; %s)\n{", iter, start, di))
+            sendline(currentdir "/body.c", sprintf("for(%s; %s; %s){", iter, start, di))
     }
 }
 
@@ -478,12 +478,13 @@ function stci(name, field, fname) {
 }
 
 function strc(name, field, fname) {
-    name = promptstr("\nλ Make struct name: ")
+    name = promptstr("\nλ Create struct name: ")
     if (name == "") return
-	addline(sprintf("typedef struct %s %s;", name, name))
+    tag = promptstr("\nλ Nametag: ")
     addline(sprintf("struct %s\n{", name))
-    sendline(rootdir "/globals/structs.c", sprintf("typedef struct %s %s;", name, name))
-	sendline(rootdir "/globals/structs.c", sprintf("struct %s\n{", name))   
+    sendline(rootdir "/prototypes.c", sprintf("typedef struct %s %s;", name, tag))
+	sendline(rootdir "/globals/structs.c", sprintf("struct %s\n{", name))
+
     while (1) {
         field = promptstr("\nλ Field type: ")       
         fname = promptstr("\nλ Field name: ")
@@ -492,6 +493,7 @@ function strc(name, field, fname) {
         sendline(rootdir "/globals/structs.c", sprintf("%s %s;", field, fname))
     }
     addline("};")
+	addline(sprintf("typedef struct %s %s;", name, tag))
     sendline(rootdir "/globals/structs.c", "};")
 }
 
