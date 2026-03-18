@@ -26,6 +26,29 @@
 			max-width:none
 		}
 	}
+	/* Progress bar container – fixed at the very top */
+    #progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background-color: #e0e0e0;
+      z-index: 9999;
+    }
+
+    /* The fill – its width will be set by JavaScript */
+    #progress-bar {
+      height: 100%;
+      background-color: #4caf50;
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+
+    /* Make sure page content is not hidden under the fixed bar */
+    body {
+      padding-top: 5px;   /* same as progress bar height */
+    }
 </style>
 </head>
 <body>
@@ -63,5 +86,62 @@ If we understood that we don’t own anything at all, we could actually come int
 </p>
 </article>
 	<p><a href="https://bg-ai.github.io/">Just Read It. Please!</a></p>
+	<script>
+(function() {
+    const STORAGE_KEY = 'bhagavatam_scroll_pos';
+    let saveTimeout;
+
+    // --- Progress bar update ---
+    const progressBar = document.getElementById('progress-bar');
+    function updateProgressBar() {
+        const scrollY = window.scrollY;
+        const winHeight = window.innerHeight;
+        const docHeight = document.documentElement.scrollHeight;
+        const maxScroll = docHeight - winHeight;
+        const percent = (maxScroll > 0) ? (scrollY / maxScroll) * 100 : 0;
+        progressBar.style.width = percent + '%';
+    }
+
+    // --- Scroll position saving ---
+    function saveScrollPosition() {
+        localStorage.setItem(STORAGE_KEY, window.scrollY);
+    }
+
+    function debouncedUpdate() {
+        if (saveTimeout) {
+            cancelAnimationFrame(saveTimeout);
+        }
+        saveTimeout = requestAnimationFrame(() => {
+            updateProgressBar();   // update bar
+            saveScrollPosition();  // save position
+        });
+    }
+
+    window.addEventListener('scroll', debouncedUpdate);
+    window.addEventListener('beforeunload', saveScrollPosition);
+
+    // --- Restore position on load ---
+    window.addEventListener('load', function() {
+        const savedPos = localStorage.getItem(STORAGE_KEY);
+        if (savedPos !== null) {
+            setTimeout(() => {
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const target = Math.min(parseInt(savedPos, 10), maxScroll);
+                if (target > 0) {
+                    window.scrollTo(0, target);
+                }
+                // Ensure progress bar matches after scroll
+                updateProgressBar();
+            }, 100);
+        } else {
+            // Still update bar even if no saved position
+            updateProgressBar();
+        }
+    });
+
+    // Initial update in case the page loads without scrolling
+    updateProgressBar();
+})();
+</script>
 </body>
 </html>
