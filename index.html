@@ -26,7 +26,6 @@
 			max-width:none
 		}
 	}
-	/* Progress bar container – fixed at the very top */
     #progress-container {
       position: fixed;
       top: 0;
@@ -36,8 +35,6 @@
       background-color: #e0e0e0;
       z-index: 9999;
     }
-
-    /* The fill – its width will be set by JavaScript */
     #progress-bar {
       height: 100%;
       background-color: #4caf50;
@@ -45,10 +42,9 @@
       transition: width 0.1s ease;
     }
 
-    /* Make sure page content is not hidden under the fixed bar */
+
     body {
-      padding-top: 5px;   /* same as progress bar height */
-    }
+      padding-top: 5px;  
 </style>
 </head>
 <body>
